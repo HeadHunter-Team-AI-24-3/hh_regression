@@ -11,3 +11,18 @@
 
 ### Руководитель: 
 Надежда Гераськина
+
+## 1.3 Этап ML
+1. Подготовка данных для ML модели
+2. Попытка регрессии с помощью ML моделей: 
+   - линейная регрессия (Scikit-learn LinearRegression)
+   - дерево решений (Scikit-learn Decision Trees)
+   - случайный лес (Scikit-learn RandomForestClassifier)
+   - бустинги (XGBoost, Catboost, LightGBM)
+   - SVM (Scikit-learn Support Vector Machines)
+3. Подбор гиперпараметров (Оптимизация модели)
+   - Методами библиотеки Scikit-learn
+      - GridSearchCV
+   - Optuna
+   - Встроенные методы отимизации (XGBoost, Catboost, LightGBM)
+4. Тестирование результатов
