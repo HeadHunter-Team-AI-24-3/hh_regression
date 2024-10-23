@@ -1,6 +1,8 @@
+import os
 import time
 from datetime import datetime
 import requests
+import pandas as pd
 
 '''
 Функция для парсинга вакансий с HH.
@@ -28,6 +30,32 @@ def get_vacancies(date_from, date_to, page: int = 0, per_page: int = 100):
         return None, response.status_code
 
 
+def json_list_to_dataframe(json_list):
+    def flatten(json_object, prefix=''):
+        flat_dict = {}
+        for key, value in json_object.items():
+            if isinstance(value, dict):
+                # Если это словарь, вызываем flatten рекурсивно
+                flat_dict.update(flatten(value, prefix + key + '_'))
+            elif isinstance(value, list):
+                # Если это список, обрабатываем каждый элемент
+                for i, item in enumerate(value):
+                    if isinstance(item, dict):
+                        # Обрабатываем вложенные словари
+                        flat_dict.update(flatten(item, prefix + key + f'_{i}_'))
+                    else:
+                        # Обработка неисков в списке (меньше встречается в данном контексте)
+                        flat_dict[prefix + key + f'_{i}'] = item
+            else:
+                # Базовый случай, добавляем значение в плоский словарь
+                flat_dict[prefix + key] = value
+        return flat_dict
+
+    flat_list = [flatten(item) for item in json_list]
+    df = pd.DataFrame(flat_list)
+    return df
+
+
 month_from = 9
 month_to = 11
 vacancies_list = []
@@ -36,13 +64,14 @@ for month in range(month_from, month_to):
     day_from = 1
     day_to = 28 + 1
     if month == 9:
-        day_to = 30 + 1
+        day_to = 1 + 1
     elif month == 10:
-        day_from = 31 + 1
+        day_from = 1 + 1
     for day in range(day_from, day_to):
         current_page = 0
 
         while True:
+            print(month, day)
             date_from = datetime(2024, month, day).isoformat()
             date_to = datetime(2024, month, day, 23, 59, 59).isoformat()
 
@@ -76,3 +105,14 @@ print("\nПарсинг завершен.")
 print()
 print('*' * 70)
 print()
+
+df = json_list_to_dataframe(vacancies_list)
+
+print('*' * 70)
+print()
+print(f'Было найдено {df.shape[0]} вакансий с появлением {df.duplicated().sum()} строк-дубликатов.')
+print(f'В каждой вакансии {df.shape[1]} переменных.')
+
+if not os.path.exists('../dataset'):
+    os.makedirs('../dataset')
+df.to_csv('../dataset/vacancies.csv', index=False)
