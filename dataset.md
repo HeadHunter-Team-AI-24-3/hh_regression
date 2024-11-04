@@ -32,6 +32,33 @@ https://disk.yandex.ru/d/OIHXL8gNkMUq9g
 28. address_metro_stations_0_station_name: Название первой станции метро
 29. address_metro_stations_0_line_name: Название первой линии метро
 30. address_metro_stations_0_station_id: Идентификатор первой станции метро
+62. employer_accredited_it_employer - Является ли компания аккредетированной.
+66. schedule_id - графика рабочего дня, id.
+67. schedule_name - графика рабочего дня, name.
+68. accept_temporary - вакансии на временной основе, bool.
+69. professional_roles_0_id - профессия, id.
+70. professional_roles_0_name - профессия, name.
+71. accept_incomplete_resumes - отклик без резюме, bool.
+72. experience_id - опыт работы, id.
+73. experience_name - опыт работы, name.
+74. employment_id - тип занятости, id.
+75. employment_name - тип занятости, name.
+76. is_adv_vacancy - Является ли это вакансия, вакансией соискателя, bool.
+77. address_metro_stations_3_station_name - станция метро, name.
+78. address_metro_stations_3_line_name - линия метро, name.
+79. address_metro_stations_3_station_id - станция метро, id.
+80. address_metro_stations_3_line_id - линия метро, id.
+81. address_metro_stations_3_lat - долгота станции метро.
+82. address_metro_stations_3_lng - широта станции метро.
+83. working_time_intervals_0_id - возможен график по сменам: начиная с 4-6 часов, id.
+84. working_time_intervals_0_name - возможен график по сменам: начиная с 4-6 часов, name.
+85. working_time_modes_0_id - время начала работы: с 16:00, id.
+86. working_time_modes_0_name - время начала работы: с 16:00, name.
+87. working_days_0_id - план работы выходные/будни, id.
+88. working_days_0_name - план работы выходные/будни, name.
+89. branding_type - способ оформления публичного профиля или объявления на сайте.
+90. branding_tariff - тарифный план или уровень услуг.
+91. department_id - Работодатель, id
 92. brand_snippet_logo : URL-адрес к стандартной версии логотипа бренда.
 93. brand_snippet_logo_xs : URL-адрес к уменьшенной версии логотипа бренда (обычно для мобильных устройств).
 94 brand_snippet_logo_scalable_default_width : ширина масштабируемого логотипа по умолчанию.
