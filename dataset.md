@@ -3,42 +3,72 @@ https://disk.yandex.ru/d/OIHXL8gNkMUq9g
 # Описание табличных данных
 9. salary_from - Начало вилки ЗП.
 10. salary_to - Конец вилки ЗП.
-62. employer_accredited_it_employer - Является ли компания аккредетированной.
-66. schedule_id - графика рабочего дня, id.
-67. schedule_name - графика рабочего дня, name.
-68. accept_temporary - вакансии на временной основе, bool.
-69. professional_roles_0_id - профессия, id.
-70. professional_roles_0_name - профессия, name.
-71. accept_incomplete_resumes - отклик без резюме, bool.
-72. experience_id - опыт работы, id.
-73. experience_name - опыт работы, name.
-74. employment_id - тип занятости, id.
-75. employment_name - тип занятости, name.
-76. is_adv_vacancy - Является ли это вакансия, вакансией соискателя, bool.
-77. address_metro_stations_3_station_name - станция метро, name.
-78. address_metro_stations_3_line_name - линия метро, name.
-79. address_metro_stations_3_station_id - станция метро, id.
-80. address_metro_stations_3_line_id - линия метро, id.
-81. address_metro_stations_3_lat - долгота станции метро.
-82. address_metro_stations_3_lng - широта станции метро.
-83. working_time_intervals_0_id - возможен график по сменам: начиная с 4-6 часов, id.
-84. working_time_intervals_0_name - возможен график по сменам: начиная с 4-6 часов, name.
-85. working_time_modes_0_id - время начала работы: с 16:00, id.
-86. working_time_modes_0_name - время начала работы: с 16:00, name.
-87. working_days_0_id - план работы выходные/будни, id.
-88. working_days_0_name - план работы выходные/будни, name.
-89. branding_type - способ оформления публичного профиля или объявления на сайте.
-90. branding_tariff - тарифный план или уровень услуг.
-91. department_id - Работодатель, id
-92. department_name - Работодатель, name.
-93. insider_interview_id - Сайт роботодателя, id.
-94. insider_interview_url - Сайт роботодателя, url.
-95. brand_snippet_logo : URL-адрес к стандартной версии логотипа бренда.
-96. brand_snippet_logo_xs : URL-адрес к уменьшенной версии логотипа бренда (обычно для мобильных устройств).
-97. brand_snippet_logo_scalable_default_width : ширина масштабируемого логотипа по умолчанию.
-98. brand_snippet_logo_scalable_default_height : высота по умолчанию для масштабируемого логотипа.
-99. brand_snippet_logo_scalable_default_url : URL-адрес масштабируемого логотипа бренда.
-100. brand_snippet_logo_scalable_xs_width : ширина масштабируемой уменьшенной версии логотипа.
+32. address_metro_stations_1_station_id - id станции метро.
+33. address_metro_stations_1_line_id - id линии метро.
+34. address_metro_stations_1_lat — широта станции метро.
+35. address_metro_stations_1_lng — долгота станции метро.
+36. address_metro_stations_2_station_name — название станции метро.
+37. address_metro_stations_2_line_name — название линии метро.
+38. address_metro_stations_2_station_id — id станции метро.
+39. address_metro_stations_2_line_id — id линии метро.
+40. address_metro_stations_2_lat — широта станции метро.
+41. address_metro_stations_2_lng — долгота станции метро.
+42. address_id — id адреса.
+43. response_url — url для отклика.
+44. published_at — время публикации.
+45. created_at — время создания.
+46. archived — является ли вакансия архивированной.
+47. apply_alternate_url — альтернативный url.
+48. show_logo_in_search — отображать ли логотип компании при поиске.
+49. url - url страницы.
+50. alternate_url — альтернативный url страницы.
+51. employer_id — id работодателя.
+52. employer_name — название компании.
+53. employer_url — url страницы компании работодателя.
+54. employer_alternate_url — альтернативный url страницы компании работодателя.
+55. employer_logo_urls_240 — url логотипа работодателя размером 240x240 пикселей.
+56. employer_logo_urls_90 — url логотипа работодателя размером 90x90 пикселей.
+57. employer_logo_urls_original — url оригинального логотипа работодателя.
+58. employer_vacancies_url — url страницы вакансий работодателя.
+59. employer_accredited_it_employer — Является ли компания аккредетированной.
+60. employer_trusted — проверен ли работодатель.
+61. snippet_requirement — описание требований.
+62. snippet_responsibility - описание обязаностей.
+63. schedule_id - графика рабочего дня, id.
+64. schedule_name - графика рабочего дня, name.
+65. accept_temporary - вакансии на временной основе, bool.
+66. professional_roles_0_id - профессия, id.
+67. professional_roles_0_name - профессия, name.
+68. accept_incomplete_resumes - отклик без резюме, bool.
+69. experience_id - опыт работы, id.
+70. experience_name - опыт работы, name.
+71. employment_id - тип занятости, id.
+72. employment_name - тип занятости, name.
+73. is_adv_vacancy - Является ли это вакансия, вакансией соискателя, bool.
+74. address_metro_stations_3_station_name - станция метро, name.
+75. address_metro_stations_3_line_name - линия метро, name.
+76. address_metro_stations_3_station_id - станция метро, id.
+77. address_metro_stations_3_line_id - линия метро, id.
+78. address_metro_stations_3_lat - долгота станции метро.
+79. address_metro_stations_3_lng - широта станции метро.
+80. working_time_intervals_0_id - возможен график по сменам: начиная с 4-6 часов, id.
+81. working_time_intervals_0_name - возможен график по сменам: начиная с 4-6 часов, name.
+82. working_time_modes_0_id - время начала работы: с 16:00, id.
+83. working_time_modes_0_name - время начала работы: с 16:00, name.
+84. working_days_0_id - план работы выходные/будни, id.
+85. working_days_0_name - план работы выходные/будни, name.
+86. branding_type - способ оформления публичного профиля или объявления на сайте.
+87. branding_tariff - тарифный план или уровень услуг.
+88. department_id - Работодатель, id
+89. department_name - Работодатель, name.
+90. insider_interview_id - Сайт роботодателя, id.
+91. insider_interview_url - Сайт роботодателя, url.
+92. brand_snippet_logo : URL-адрес к стандартной версии логотипа бренда.
+93. brand_snippet_logo_xs : URL-адрес к уменьшенной версии логотипа бренда (обычно для мобильных устройств).
+94. brand_snippet_logo_scalable_default_width : ширина масштабируемого логотипа по умолчанию.
+95. brand_snippet_logo_scalable_default_height : высота по умолчанию для масштабируемого логотипа.
+96. brand_snippet_logo_scalable_default_url : URL-адрес масштабируемого логотипа бренда.
+97.  brand_snippet_logo_scalable_xs_width : ширина масштабируемой уменьшенной версии логотипа.
 101. brand_snippet_logo_scalable_xs_height : высота масштабируемой уменьшенной версии логотипа.
 102. brand_snippet_logo_scalable_xs_url : URL-адрес масштабируемой уменьшенной версии логотипа.
 103. brand_snippet_picture : URL-адрес к стандартному изображению бренда.
