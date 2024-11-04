@@ -169,3 +169,48 @@ NaN значения заполняем константой Unknown.
 94. insider_interview_url - Сайт роботодателя, url.
 
 Мы исключаем все URL-адреса, поскольку они не содержат полезной информации для наших моделей (наслоение). В целом, данный столбец можно преобразовать в булев тип, поскольку он указывает на наличие или отсутствие у компании собственной страницы на сайте HeadHunter. Оставшиеся NaN заполнить константой Unknown.
+
+95-120 Колонки brand_snippet
+
+Стобцы являются лишними так как их заменяет brand_snippet_logo:
+1. brand_snippet_logo_xs
+2. brand_snippet_logo_scalable_default_width
+3. brand_snippet_logo_scalable_default_height
+4. brand_snippet_logo_scalable_default_url
+5. brand_snippet_logo_scalable_xs_width
+6. brand_snippet_logo_scalable_xs_height
+7. brand_snippet_logo_scalable_xs_url
+
+Стобцы являются лишними так как их заменяет brand_snippet_picture
+1. brand_snippet_picture_xs
+2. brand_snippet_picture_scalable_default_width
+3. brand_snippet_picture_scalable_default_height
+4. brand_snippet_picture_scalable_default_url
+5. brand_snippet_picture_scalable_xs_width
+6. brand_snippet_picture_scalable_xs_height
+7. brand_snippet_picture_scalable_xs_url
+
+Стобцы являются лишними так как их заменяет brand_snippet_background_gradient_color_list_0_color и brand_snippet_background_gradient_color_list_1_color
+1. brand_snippet_background_gradient_color_list_0_position
+2. brand_snippet_background_gradient_color_list_1_position
+
+Стобцы являются лишними так как не несут в себе достаточно информации
+1. brand_snippet_background_gradient_color_list_2_color
+2. brand_snippet_background_gradient_color_list_2_position
+3. brand_snippet_background_gradient_color_list_3_color
+4. brand_snippet_background_gradient_color_list_3_position
+
+Для столбцов
+1. brand_snippet_logo
+2. brand_snippet_picture
+3. brand_snippet_background_color
+4. brand_snippet_background_gradient_angle
+5. brand_snippet_background_gradient_color_list_0_color
+6. brand_snippet_background_gradient_color_list_1_color
+
+NaN заполнили константой Unknown. Статистика Краскела-Уоллиса показала, что существует статистически значимая зависимость между полями и зарплатой.
+
+121. immediate_redirect_url
+122. immediate_redirect_vacancy_id
+
+Не содержат полезной информации для моделей
