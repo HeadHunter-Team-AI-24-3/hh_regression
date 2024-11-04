@@ -1,6 +1,37 @@
 https://disk.yandex.ru/d/OIHXL8gNkMUq9g
 
 # Описание табличных данных
+1. id: Идентификатор вакансии
+2. premium: Является ли данная вакансия премиум-вакансией
+3. name: Название вакансии
+4. department: Департамент
+5. has_test: Информация о наличии прикрепленного тестового задании к вакансии
+6. response_letter_required: Обязательно ли заполнять сообщение при отклике на вакансию
+7. area_id:  Идентификатор Региона
+8. area_name: Регион
+8. area_url: Ссылка на регион
+9. salary_from: Нижняя граница зарплаты
+10. salary_to: Верхняя граница зарплаты
+11. salary_currency: Код валюты
+12. salary_gross: Признак что границы зарплаты указаны до вычета налогов
+13. type_id: Идентификатор типа вакансии
+14. type_name: Название типа вакансии
+15. address_city: Город
+16. address_street: Улица
+17. address_building: Дом
+18. address_lat: Координаты широты
+19. address_lng: Координаты долготы
+20. address_description: Описание адреса
+21. address_raw: Адрес ввиде строки
+22. address_metro_station_name: Станция метро
+23. address_metro_line_name: Название линии метро
+24. address_metro_station_id: Идентифиактор станиции метро
+25. address_metro_line_id: Идентфикатор линии метро
+26. address_metro_lat: Координтаы широты станции метро
+27. address_metro_lng: Координаты долготы станции метро
+28. address_metro_stations_0_station_name: Название первой станции метро
+29. address_metro_stations_0_line_name: Название первой линии метро
+30. address_metro_stations_0_station_id: Идентификатор первой станции метро
 92. brand_snippet_logo : URL-адрес к стандартной версии логотипа бренда.
 93. brand_snippet_logo_xs : URL-адрес к уменьшенной версии логотипа бренда (обычно для мобильных устройств).
 94 brand_snippet_logo_scalable_default_width : ширина масштабируемого логотипа по умолчанию.
