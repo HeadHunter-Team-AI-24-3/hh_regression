@@ -1,19 +1,17 @@
-version: "3.8"
-
 services:
   fastapi:
     build:
       context: .
-      dockerfile: Dockerfile.fastapi
+      dockerfile: api/Dockerfile.fastapi
     ports:
-      - "8080:8080"
+      - "8000:8000"
     volumes:
-      - .:/api
+      - ./api:/api
 
   streamlit:
     build:
       context: .
-      dockerfile: Dockerfile.streamlit
+      dockerfile: streamlit/Dockerfile.streamlit
     ports:
       - "8501:8501"
     depends_on:
