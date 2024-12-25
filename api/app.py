@@ -1,10 +1,11 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, FastAPI, Request
-from typing import List
+from fastapi import HTTPException, FastAPI, Request
+from fastapi.responses import StreamingResponse
+from io import BytesIO
+from starlette.responses import FileResponse
+from pandas_profiling import ProfileReport
 import pandas as pd
 from pydantic import BaseModel
-import tempfile
 import sweetviz as sv
-from io import StringIO
 import pickle
 
 app = FastAPI()
@@ -12,46 +13,58 @@ app = FastAPI()
 df = pd.DataFrame()
 
 class ColumnsRequest(BaseModel):
-    columns: List[str]
-
-class DataFramePayload(BaseModel):
-    data: dict
+    columns: list
 
 @app.post("/upload_dataframe")
 async def upload_dataframe(request: Request):
+    global df
     try:
         content = await request.body()
-
         dataframe = pickle.loads(content)
 
         if not isinstance(dataframe, pd.DataFrame):
             raise ValueError("Данные не являются объектом DataFrame")
 
+        df = dataframe
+
         return {"message": "DataFrame успешно получен"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Ошибка обработки DataFrame: {str(e)}")
 
-@app.post("/get_columns/")
+
+@app.post("/get_columns")
 async def get_columns(request: ColumnsRequest):
     global df
-    if df.empty:
-        return {"error": "DataFrame пуст"}
-    
+    if df is None or df.empty:
+        raise HTTPException(status_code=404, detail="DataFrame пуст или не инициализирован")
+
     try:
         result_df = df[request.columns]
     except KeyError as e:
-        return {"error": f"Столбец {str(e)} не найден"}
-    return result_df.to_dict(orient='records')
+        raise HTTPException(status_code=400, detail=f"Column {str(e)} not found")
 
-@app.get("/get_profile/")
+    pickle_data = pickle.dumps(result_df)
+    return StreamingResponse(
+        BytesIO(pickle_data),
+        media_type="application/octet-stream"
+    )
+
+
+@app.get("/get_profile")
 async def get_profile():
     global df
-    if df.empty:
-        return {"error": "DataFrame пуст"}
+    if df is None or df.empty:
+        raise HTTPException(status_code=404, detail="DataFrame пуст или не инициализирован")
 
-    report = sv.analyze(df)
-    html_profile = report.show_html(open_browser=False)
-    with open(html_profile, "r") as file:
-        html_content = file.read()
+    try:
+        profile = ProfileReport(df, title="ProfileReport", explorative=True)
+        profile_path = "profiling_report.html"
+        profile.to_file(profile_path)
 
-    return {"profile_html": html_content}
+        return FileResponse(
+            path=profile_path,
+            media_type='text/html',
+            filename="profiling_report.html"
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ошибка при создании профиля: {str(e)}")
