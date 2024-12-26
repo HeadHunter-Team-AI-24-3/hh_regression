@@ -1,3 +1,5 @@
+import warnings
+warnings.filterwarnings("ignore")
 from tqdm import tqdm
 tqdm.pandas()
 import numpy as np
@@ -100,13 +102,17 @@ def preprocess_data(df: pd.DataFrame) -> pd.DataFrame:
     df = df.dropna(axis=1, how='all')
     df.drop_duplicates(inplace=True)
 
-    df['salary'] = df.progress_apply(calculate_salary, axis=1)
-    for column in ['salary_from', 'salary_to']:
-        del df[column]
+    try:
 
-    df['salary'] = df['salary'] * df['salary_currency'].map(salary_currency_dict_to_RUR)
+        df['salary'] = df.apply(calculate_salary, axis=1)
+        for column in ['salary_from', 'salary_to']:
+            del df[column]
 
-    df['category'] = df['name'].progress_apply(lambda x: categorize(x, categories))
+        df['salary'] = df['salary'] * df['salary_currency'].map(salary_currency_dict_to_RUR)
+    except:
+        pass
+
+    df['category'] = df['name'].apply(lambda x: categorize(x, categories))
     df['name_length'] = df['name'].apply(len)
     df['length'] = df['snippet_requirement'].str.len()
 
@@ -145,9 +151,14 @@ def preprocess_data(df: pd.DataFrame) -> pd.DataFrame:
 
     df['length'] = df['length'].fillna(0)
 
-    return df[cat_columns + num_columns + ['salary']]
+    try:
+        result_df = df[cat_columns + num_columns + ['salary']]
+    except:
+        result_df = df[cat_columns + num_columns]
 
-def preprocess_data_for_model(df: pd.DataFrame) -> pd.DataFrame:
+    return result_df
+
+def preprocess_data_for_model(df: pd.DataFrame, is_trained: bool) -> pd.DataFrame:
 
     df.reset_index(inplace=True, drop=True)
 
@@ -177,8 +188,13 @@ def preprocess_data_for_model(df: pd.DataFrame) -> pd.DataFrame:
         df[col] = label_encoder.fit_transform(df[col])
     df[label_columns]
 
-    merged_df = pd.concat([df[label_columns], encoded_ohe_data, num_df, df[['salary']]], axis=1)
-    X = merged_df.drop(['salary'], axis=1)
-    y = merged_df['salary']
+    if is_trained:
+        merged_df = pd.concat([df[label_columns], encoded_ohe_data, num_df, df[['salary']]], axis=1)
+        X = merged_df.drop(['salary'], axis=1)
+        y = merged_df['salary']
 
-    return train_test_split(X, y, test_size=0.2, random_state=12345)
+        X_train, X_test_val, y_train, y_test_val = train_test_split(X, y, test_size=0.4, random_state=12345)
+        X_test, X_val, y_test, y_val = train_test_split(X_test_val, y_test_val, test_size=0.5, random_state=12345)
+
+        return X_train, X_val, X_test, y_train, y_val, y_test
+    return pd.concat([df[label_columns], encoded_ohe_data, num_df], axis=1)
