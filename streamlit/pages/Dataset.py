@@ -1,6 +1,12 @@
-import requests
 import streamlit as st
 import pandas as pd
+import requests
+import matplotlib.pyplot as plt
+import pickle
+
+FASTAPI_HOST = "http://127.0.0.1:8000/"
+headers = {'Content-Type': 'application/octet-stream'}
+st.session_state.df = pd.DataFrame()
 
 st.set_page_config(
     page_title="Датасет",   # Название в меню
@@ -10,45 +16,21 @@ st.set_page_config(
 st.title("Dataset Page")
 st.write("Добро пожаловать на страницу где расположена информация по текущему датасету!")
 
-
-# Функция для получения данных с бэкенда
-@st.cache_data
-def get_data_from_backend():
-    # url = "https://your-backend-api.com/get-data"
-    # response = requests.get(url)
-    #
-    # if response.status_code == 200:
-    #     data = response.json()
-    #     df = pd.DataFrame(data)
-    #     return df
-    # else:
-    #     st.error("Ошибка при получении данных с сервера.")
-    #     return None
-
-    data = {
-        "Name": ["Alice", "Bob", "Charlie", "David", "Eve"],
-        "Age": [25, 30, 35, 40, 45],
-        "Salary": [50000, 55000, 60000, 65000, 70000]
-    }
-    df = pd.DataFrame(data)
-    return df
-
-# Запрашиваем данные при открытии страницы
-df = get_data_from_backend()
-
-
 # Функция для отправки CSV файла на сервер
-def send_csv_to_backend(csv_file):
-    st.success('Файл отправлен')
-    # url = "https://your-backend-api.com/upload"
-    # files = {"file": csv_file}
-    #
-    # response = requests.post(url, files=files)
-    #
-    # if response.status_code == 200:
-    #     st.success("CSV файл успешно отправлен!")
-    # else:
-    #     st.error(f"Ошибка при отправке файла. Код ошибки: {response.status_code}")
+def send_csv_to_backend(data_frame):
+    api_url = FASTAPI_HOST + "upload_dataframe"
+    df_serialized = pickle.dumps(data_frame)
+    try:
+        response = requests.post(api_url, data=df_serialized, headers=headers)
+
+        if response.status_code == 200:
+            st.success('Файл успешно загружен в API')
+            st.session_state.df = data_frame
+            st.json(response.json())
+        else:
+            st.error(f"Ошибка при загрузке файла: {response.status_code}, {response.text}")
+    except requests.exceptions.RequestException as e:
+        st.error(f"Ошибка соединения с API: {e}")
 
 st.write("Загрузка CSV файла на сервер")
 
@@ -57,28 +39,31 @@ uploaded_file = st.file_uploader("Выберите CSV файл для отпр�
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
     st.write("Предпросмотр данных из файла:")
-    st.dataframe(df)
+    st.write("Первые 5 строк вашего файла:")
+    st.write(df.head())
     if st.button("Отправить файл на сервер"):
-        send_csv_to_backend(uploaded_file)
+            send_csv_to_backend(df)
 
-if df is not None:
+if not st.session_state.df.empty:
+    st.dataframe(st.session_state.df)
+    df = st.session_state.df
     st.write("Данные с сервера:", df)
 
-# Заголовок
-st.title("Текущий Датасет")
+    # Заголовок
+    st.title("Текущий Датасет")
 
-# Отображение данных
-st.write("Датасет:")
-st.dataframe(df)
+    # Отображение данных
+    st.write("Датасет:")
+    st.dataframe(df)
 
-# Информация о датасете
-st.write("Информация о датасете:")
-st.write(df.info())
+    # Информация о датасете
+    st.write("Информация о датасете:")
+    st.write(df.info())
 
-# Статистика
-st.write("Описательная статистика:")
-st.write(df.describe())
+    # Статистика
+    st.write("Описательная статистика:")
+    st.write(df.describe())
 
-# Пропущенные значения
-st.write("Пропущенные значения в датасете:")
-st.write(df.isnull().sum())
+    # Пропущенные значения
+    st.write("Пропущенные значения в датасете:")
+    st.write(df.isnull().sum())
