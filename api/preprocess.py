@@ -6,9 +6,6 @@ pd.set_option('display.max_columns', None)
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
 
-df = pd.read_csv('../dataset/vacancies.csv', low_memory=False)
-print('DF появился')
-
 cat_columns = ['premium', 'has_test', 'response_letter_required', 'area_name', 'salary_currency', 'salary_gross', 'type_name', 'address_city', 'address_metro_station_name', 'address_metro_line_name', 'address_metro_stations_0_line_name', 'archived', 'employer_name', 'employer_accredited_it_employer', 'employer_trusted', 'schedule_name', 'accept_temporary', 'professional_roles_0_name', 'accept_incomplete_resumes', 'experience_name', 'employment_name', 'address_metro_stations_3_station_name', 'address_metro_stations_3_line_name', 'working_time_intervals_0_name', 'working_time_modes_0_name', 'working_days_0_name', 'branding_type', 'branding_tariff', 'department_name', 'insider_interview_id', 'brand_snippet_logo', 'brand_snippet_picture', 'brand_snippet_background_color', 'brand_snippet_background_gradient_angle', 'brand_snippet_background_gradient_color_list_0_position', 'brand_snippet_background_gradient_color_list_1_position', 'category']
 text_columns = ['name', 'snippet_requirement', 'snippet_responsibility']
 num_columns = ['name_length', 'length']
