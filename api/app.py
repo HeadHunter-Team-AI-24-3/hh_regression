@@ -1,3 +1,4 @@
+import logging
 from fastapi import HTTPException, FastAPI, Request
 from fastapi.responses import StreamingResponse
 from io import BytesIO
@@ -11,6 +12,17 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error
 from preprocess import *
 from typing import Dict, Any
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("logs/fastapi.log"),
+        logging.StreamHandler()
+    ]
+)
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 df = pd.DataFrame()
@@ -28,30 +40,40 @@ class TrainModelRequest(BaseModel):
 async def upload_dataframe(request: Request):
     global df
     try:
+        logger.info("Вызов /upload_dataframe")
         content = await request.body()
+        logger.info(f"Получен контент размером: {len(content)} байт")
+
         dataframe = pickle.loads(content)
 
         if not isinstance(dataframe, pd.DataFrame):
+            logger.error("Данные не являются объектом DataFrame")
             raise ValueError("Данные не являются объектом DataFrame")
 
         df = dataframe
         print(type(df))
 
+        logger.info("DataFrame успешно получен")
         return {"message": "DataFrame успешно получен"}
     except Exception as e:
+        logger.error(f"Ошибка обработки DataFrame: {str(e)}")
         raise HTTPException(status_code=400, detail=f"Ошибка обработки DataFrame: {str(e)}")
 
 
 @app.post("/get_columns")
 async def get_columns(request: ColumnsRequest):
     global df
+    logger.info("Вызов /get_columns")
     if df is None or df.empty:
+        logger.error("DataFrame пуст или не инициализирован")
         raise HTTPException(status_code=404, detail="DataFrame пуст или не инициализирован")
 
     try:
+        logger.info(f"Колонки датасета по которым берем срез: {str(request.columns)}")
         result_df = df[request.columns]
     except KeyError as e:
-        raise HTTPException(status_code=400, detail=f"Column {str(e)} not found")
+        logger.error(f"Столбец {str(e)} не найден")
+        raise HTTPException(status_code=400, detail=f"Столбец {str(e)} не найден")
 
     pickle_data = pickle.dumps(result_df)
     return StreamingResponse(
@@ -63,7 +85,9 @@ async def get_columns(request: ColumnsRequest):
 @app.get("/get_profile")
 async def get_profile():
     global df
+    logger.info("Вызов /get_profile")
     if df is None or df.empty:
+        logger.error("DataFrame пуст или не инициализирован")
         raise HTTPException(status_code=404, detail="DataFrame пуст или не инициализирован")
 
     try:
@@ -77,6 +101,7 @@ async def get_profile():
             filename="profiling_report.html"
         )
     except Exception as e:
+        logger.error(f"Ошибка при создании профиля: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Ошибка при создании профиля: {str(e)}")
     
 
