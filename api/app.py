@@ -9,6 +9,7 @@ from catboost import CatBoostRegressor
 from sklearn.metrics import r2_score, mean_squared_error
 from preprocess import *
 from typing import Dict, Any
+from json import JSONDecodeError
 
 logging.basicConfig(
     level=logging.INFO,
@@ -40,43 +41,39 @@ class TrainModelRequest(BaseModel):
 async def upload_dataframe(request: Request):
     global df
     try:
-        logger.info("Вызов /upload_dataframe")
+        logger.info("Call to /upload_dataframe")
         content = await request.body()
-        logger.info(f"Получен контент размером: {len(content)} байт")
+        logger.info(f"Content received with size: {len(content)} bytes")
 
         dataframe = pickle.loads(content)
 
         if not isinstance(dataframe, pd.DataFrame):
-            logger.error("Данные не являются объектом DataFrame")
-            raise ValueError("Данные не являются объектом DataFrame")
+            logger.error("Data is not a DataFrame object")
+            raise ValueError("Data is not a DataFrame object")
 
         df = dataframe
 
-        logger.info("DataFrame успешно получен")
-        return {"message": "DataFrame успешно получен"}
+        logger.info("DataFrame successfully received")
+        return {"message": "DataFrame successfully received"}
     except Exception as e:
-        logger.error(f"Ошибка обработки DataFrame: {str(e)}")
-        raise HTTPException(
-            status_code=400, detail=f"Ошибка обработки DataFrame: {str(e)}")
+        logger.error(f"Error processing DataFrame: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Error processing DataFrame: {str(e)}")
 
 
 @app.post("/get_columns")
 async def get_columns(request: ColumnsRequest):
     global df
-    logger.info("Вызов /get_columns")
+    logger.info("Call to /get_columns")
     if df is None or df.empty:
-        logger.error("DataFrame пуст или не инициализирован")
-        raise HTTPException(
-            status_code=404, detail="DataFrame пуст или не инициализирован")
+        logger.error("DataFrame is empty or not initialized")
+        raise HTTPException(status_code=404, detail="DataFrame is empty or not initialized")
 
     try:
-        logger.info(
-            f"Колонки датасета по которым берем срез: {str(request.columns)}")
+        logger.info(f"Columns for slicing: {str(request.columns)}")
         result_df = df[request.columns]
     except KeyError as e:
-        logger.error(f"Столбец {str(e)} не найден")
-        raise HTTPException(
-            status_code=400, detail=f"Столбец {str(e)} не найден")
+        logger.error(f"Column {str(e)} not found")
+        raise HTTPException(status_code=400, detail=f"Column {str(e)} not found")
 
     pickle_data = pickle.dumps(result_df)
     return StreamingResponse(
@@ -90,29 +87,27 @@ async def train_model(request: TrainModelRequest):
     global df
     global models
 
-    logger.info("Вызов /train_model")
+    logger.info("Call to /train_model")
     if df is None or df.empty:
         raise HTTPException(
             status_code=404, detail="DataFrame is empty or not initialized")
 
     try:
         data = preprocess_data(df)
-        logger.info("Обработка DF прошла успешно")
+        logger.info("DataFrame preprocessing succeeded")
     except Exception as e:
-        logger.info("Обработка DF прошла неуспешно")
-        raise HTTPException(
-            status_code=500, detail=f"Error during preprocessing: {str(e)}")
+        logger.info("DataFrame preprocessing failed")
+        raise HTTPException(status_code=500, detail=f"Error during preprocessing: {str(e)}")
 
     try:
-        X_train, X_val, X_test, y_train, y_val, y_test = preprocess_data_for_model(
-            data, is_trained=True)
-        logger.info("Разбиение на train/val/test прошло успешно")
+        X_train, X_val, X_test, y_train, y_val, y_test = preprocess_data_for_model(data, is_trained=True)
+        logger.info("Train/val/test split succeeded")
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Error during preprocessing data for model: {str(e)}")
 
     try:
-        logger.info("Начало обучение модели")
+        logger.info("Beginning model training")
         model = CatBoostRegressor(**request.hyperparameters)
 
     except Exception as e:
@@ -169,7 +164,7 @@ async def train_model(request: TrainModelRequest):
 
 @app.get("/get_model_info/{model_id}")
 async def get_model_info(model_id: str):
-    logger.info("Вызов /get_model_info")
+    logger.info("Call to /get_model_info")
     if model_id not in models:
         raise HTTPException(
             status_code=404, detail=f"Model with id {model_id} not found")
@@ -185,7 +180,7 @@ async def get_model_info(model_id: str):
 
 @app.get("/get_learning_curves/{model_id}")
 async def get_learning_curves(model_id: str):
-    logger.info("Вызов /get_learning_curves")
+    logger.info("Call to /get_learning_curves")
     if model_id not in models:
         raise HTTPException(
             status_code=404, detail=f"Model with id {model_id} not found")
@@ -199,7 +194,7 @@ async def get_learning_curves(model_id: str):
 
 @app.delete("/models/{model_id}")
 async def delete_model(model_id: str):
-    logger.info(f"Удаление модели {model_id}")
+    logger.info(f"Deleting model {model_id}")
     global models
     if model_id in models:
         del models[model_id]
@@ -211,7 +206,7 @@ async def delete_model(model_id: str):
 
 @app.delete("/models")
 async def delete_all_models():
-    logger.info("Удаление всех моделей")
+    logger.info("Deleting all models")
     global models
     models.clear()
     return {"message": "All models have been deleted."}
@@ -219,15 +214,14 @@ async def delete_all_models():
 
 @app.post("/predict/{model_id}")
 async def predict(model_id: str, request: Request):
-    logger.info("Инференс модели")
+    logger.info("Model inference")
     if model_id not in models:
-        raise HTTPException(
-            status_code=404, detail=f"Модель с ID '{model_id}' не найдена.")
+        raise HTTPException(status_code=404, detail=f"Model with ID '{model_id}' not found.")
     try:
         dataframe_bytes = await request.body()
         input_data = pickle.loads(dataframe_bytes)
         if not isinstance(input_data, pd.DataFrame):
-            raise ValueError("Переданный объект не является DataFrame")
+            raise ValueError("The passed object is not a DataFrame")
         model_info = models[model_id]
         model = model_info["model"]
         processed_data = preprocess_data(input_data)
@@ -235,5 +229,31 @@ async def predict(model_id: str, request: Request):
         predictions = model.predict(X)
         return {"predictions": predictions.tolist(), "model_id": model_id}
     except Exception as e:
-        raise HTTPException(
-            status_code=400, detail=f"Ошибка обработки данных или выполнения инференса: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Error processing data or performing inference: {str(e)}")
+    
+
+@app.post("/compare_learning_curves/")
+async def compare_learning_curves(request: Request):
+    logger.info("Comparing learning curves for multiple experiments")
+    try:
+        request_data = await request.json()
+        model_ids = request_data.get("model_ids", [])
+        
+        if not model_ids:
+            raise HTTPException(status_code=400, detail="No model IDs provided")
+
+        if len(model_ids) > 5:
+            raise HTTPException(status_code=400, detail="Cannot compare more than 5 models at once")
+
+        learning_curves = {}
+        for model_id in model_ids:
+            if model_id not in models:
+                raise HTTPException(status_code=404, detail=f"Model with ID '{model_id}' not found")
+            learning_curves[model_id] = models[model_id]["learning_curves"]
+
+        return {"learning_curves_comparison": learning_curves}
+    
+    except JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid JSON format")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
