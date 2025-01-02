@@ -17,4 +17,6 @@ services:
     depends_on:
       - fastapi
     volumes:
-      - .:/streamlit
+      - ./streamlit:/streamlit
+    environment:
+      - RUNNING_IN_DOCKER=true

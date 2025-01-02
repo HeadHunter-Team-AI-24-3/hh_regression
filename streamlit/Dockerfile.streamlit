@@ -6,6 +6,6 @@ COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+COPY ./streamlit /streamlit
 
-CMD ["streamlit", "run", "streamlit/app.py"]
+CMD ["streamlit", "run", "app.py"]

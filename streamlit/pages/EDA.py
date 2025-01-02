@@ -42,14 +42,17 @@ if not st.session_state.df.empty:
     st.write("Датасет")
     st.write(init_df.head())
 
-    min_salary, max_salary = st.sidebar.slider(
-        "Выберите диапазон зарплат:",
-        int(init_df['salary'].min()),
-        int(init_df['salary'].max()),
-        (int(init_df['salary'].min()), int(init_df['salary'].max()))
-    )
+    if "salary" in init_df.columns:
+        min_salary, max_salary = st.sidebar.slider(
+            "Выберите диапазон зарплат:",
+            int(init_df['salary'].min()),
+            int(init_df['salary'].max()),
+            (int(init_df['salary'].min()), int(init_df['salary'].max()))
+        )
 
-    df = init_df[(init_df['salary'] >= min_salary) & (init_df['salary'] <= max_salary)]
+        df = init_df[(init_df['salary'] >= min_salary) & (init_df['salary'] <= max_salary)]
+    else:
+        df = init_df
 
     # Настройки графиков
     color_palette = st.sidebar.selectbox(
@@ -66,8 +69,8 @@ if not st.session_state.df.empty:
     st.header("Постройте свой график")
     st.write("Выберите свой столбец и тип графика и постройте свой уникальный график")
     # Выбор колонок для графика
-    x_col = st.selectbox("Выберите колонку для оси X", df.columns)
-    y_col = st.selectbox("Выберите колонку для оси Y", df.columns)
+    x_col = st.selectbox("Выберите колонку для оси X", df.columns, index=0)
+    y_col = st.selectbox("Выберите колонку для оси Y", df.columns, index=1)
 
     # Выбор типа графика
     chart_type = st.selectbox("Выберите тип графика", ["Линейный", "Столбчатый", "Диаграмма рассеяния"])
@@ -75,66 +78,67 @@ if not st.session_state.df.empty:
     # Настройки цвета графика
     color = st.color_picker("Выберите цвет графика", "#3498db")
 
-    # Построение графика
-    fig_your_plot, ax_your_plot = plt.subplots(figsize=(fig_width, fig_height))
+    if x_col and y_col:
+        # Построение графика
+        fig_your_plot, ax_your_plot = plt.subplots(figsize=(fig_width, fig_height))
 
-    if chart_type == "Линейный":
-        ax_your_plot.plot(df[x_col], df[y_col], color=color, label=f"{y_col} vs {x_col}")
-    elif chart_type == "Столбчатый":
-        ax_your_plot.bar(df[x_col], df[y_col], color=color, label=f"{y_col} vs {x_col}")
-    elif chart_type == "Диаграмма рассеяния":
-        ax_your_plot.scatter(df[x_col], df[y_col], color=color, label=f"{y_col} vs {x_col}")
+        if chart_type == "Линейный":
+            ax_your_plot.plot(df[x_col], df[y_col], color=color, label=f"{y_col} vs {x_col}")
+        elif chart_type == "Столбчатый":
+            ax_your_plot.bar(df[x_col], df[y_col], color=color, label=f"{y_col} vs {x_col}")
+        elif chart_type == "Диаграмма рассеяния":
+            ax_your_plot.scatter(df[x_col], df[y_col], color=color, label=f"{y_col} vs {x_col}")
 
-    # Настройки графика
-    ax_your_plot.set_title(f"{chart_type} график")
-    ax_your_plot.set_xlabel(x_col)
-    ax_your_plot.set_ylabel(y_col)
-    ax_your_plot.legend()
+        # Настройки графика
+        ax_your_plot.set_title(f"{chart_type} график")
+        ax_your_plot.set_xlabel(x_col)
+        ax_your_plot.set_ylabel(y_col)
+        ax_your_plot.legend()
 
-    # Отображение графика
-    st.pyplot(fig_your_plot)
+        # Отображение графика
+        st.pyplot(fig_your_plot)
 
-    st.subheader("Диаграмма разброса (Plotly)")
-    color = st.color_picker("Выберите цвет точек", "#636EFA")  # Цвет для точек
-    fig_scatter = px.scatter(df, x=x_col, y=y_col, color_discrete_sequence=[color])
-    st.plotly_chart(fig_scatter)
+        st.subheader("Диаграмма разброса (Plotly)")
+        color = st.color_picker("Выберите цвет точек", "#636EFA")  # Цвет для точек
+        fig_scatter = px.scatter(df, x=x_col, y=y_col, color_discrete_sequence=[color])
+        st.plotly_chart(fig_scatter)
 
-    st.subheader("Линейный график (Altair)")
-    chart_type = st.radio("Тип линейного графика", ["Обычный", "Шаговый", "Область"])
-    if chart_type == "Обычный":
-        line_chart = alt.Chart(df).mark_line().encode(
-            x=x_col,
-            y=y_col,
-            tooltip=[x_col, y_col]
-        )
-    elif chart_type == "Шаговый":
-        line_chart = alt.Chart(df).mark_line(interpolate='step-after').encode(
-            x=x_col,
-            y=y_col,
-            tooltip=[x_col, y_col]
-        )
-    else:  # Область
-        line_chart = alt.Chart(df).mark_area().encode(
-            x=x_col,
-            y=y_col,
-            tooltip=[x_col, y_col]
-        )
-    st.altair_chart(line_chart, use_container_width=True)
+        st.subheader("Линейный график (Altair)")
+        chart_type = st.radio("Тип линейного графика", ["Обычный", "Шаговый", "Область"])
+        if chart_type == "Обычный":
+            line_chart = alt.Chart(df).mark_line().encode(
+                x=x_col,
+                y=y_col,
+                tooltip=[x_col, y_col]
+            )
+        elif chart_type == "Шаговый":
+            line_chart = alt.Chart(df).mark_line(interpolate='step-after').encode(
+                x=x_col,
+                y=y_col,
+                tooltip=[x_col, y_col]
+            )
+        else:  # Область
+            line_chart = alt.Chart(df).mark_area().encode(
+                x=x_col,
+                y=y_col,
+                tooltip=[x_col, y_col]
+            )
+        st.altair_chart(line_chart, use_container_width=True)
 
-    st.subheader("Гистограмма (Plotly)")
-    bins = st.slider("Количество интервалов (бинов)", min_value=5, max_value=50, value=20)
-    fig_hist = px.histogram(df, x=x_col, nbins=bins, color_discrete_sequence=[color])
-    st.plotly_chart(fig_hist)
+        st.subheader("Гистограмма (Plotly)")
+        bins = st.slider("Количество интервалов (бинов)", min_value=5, max_value=50, value=20)
+        fig_hist = px.histogram(df, x=x_col, nbins=bins, color_discrete_sequence=[color])
+        st.plotly_chart(fig_hist)
 
-    st.subheader("Парные диаграммы (Plotly)")
-    selected_columns = st.multiselect("Выберите колонки для анализа", df.columns, default=df.columns[:3])
-    if selected_columns:
-        fig_pair = px.scatter_matrix(df, dimensions=selected_columns, color_discrete_sequence=[color])
-        st.plotly_chart(fig_pair)
+        st.subheader("Парные диаграммы (Plotly)")
+        selected_columns = st.multiselect("Выберите колонки для анализа", df.columns, default=df.columns[:3])
+        if selected_columns:
+            fig_pair = px.scatter_matrix(df, dimensions=selected_columns, color_discrete_sequence=[color])
+            st.plotly_chart(fig_pair)
 
-    st.subheader("Коробчатая диаграмма (Plotly)")
-    fig_box = px.box(df, x=x_col, y=y_col, color_discrete_sequence=[color])
-    st.plotly_chart(fig_box)
+        st.subheader("Коробчатая диаграмма (Plotly)")
+        fig_box = px.box(df, x=x_col, y=y_col, color_discrete_sequence=[color])
+        st.plotly_chart(fig_box)
 
     if "salary" not in df.columns:
         st.error("В датасете нет столбца 'salary'. Пожалуйста, загрузите корректный файл. Или воспользуйтесь построением своего графика из вашего датасета")
