@@ -6,7 +6,7 @@ import pandas as pd
 from pydantic import BaseModel
 import pickle
 from catboost import CatBoostRegressor
-from sklearn.metrics import r2_score, mean_squared_error
+from sklearn.metrics import r2_score, root_mean_squared_error
 from preprocess import *
 from typing import Dict, Any
 from json import JSONDecodeError
@@ -146,7 +146,7 @@ async def train_model(request: TrainModelRequest):
 
     try:
         y_pred = model.predict(X_test)
-        rmse = mean_squared_error(y_test, y_pred, squared=False)
+        rmse = root_mean_squared_error(y_test, y_pred)
         r2 = r2_score(y_test, y_pred)
     except Exception as e:
         raise HTTPException(
@@ -194,6 +194,23 @@ async def get_model_info(model_id: str):
         "hyperparameters": model_info["model"].get_params(),
         "metrics": model_info["metrics"]
     }
+
+
+@app.get("/get_models_info")
+async def get_models_info():
+    logger.info("Call to /get_models_info")
+    if not models:
+        raise HTTPException(
+            status_code=404, detail=f"No models found")
+    result = []
+    for model_id, model_info in models.items():
+        result.append({
+            "model_id": model_id,
+            "model_name": model_info["name"],
+            "hyperparameters": model_info["model"].get_params(),
+            "metrics": model_info["metrics"]
+        })
+    return result
 
 
 @app.get("/get_learning_curves/{model_id}")
