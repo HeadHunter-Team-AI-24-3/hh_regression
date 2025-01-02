@@ -129,3 +129,8 @@
 2025-01-02 16:05:45,591 - app - INFO - DataFrame successfully sent
 2025-01-02 16:08:13,158 - app - INFO - Call to /get_dataframe
 2025-01-02 16:08:13,643 - app - INFO - DataFrame successfully sent
+2025-01-02 16:35:28,044 - app - INFO - Call to /get_dataframe
+2025-01-02 16:35:28,927 - app - INFO - DataFrame successfully sent
+2025-01-02 16:35:34,080 - app - INFO - Call to /upload_dataframe
+2025-01-02 16:35:34,114 - app - INFO - Content received with size: 32225633 bytes
+2025-01-02 16:35:34,305 - app - INFO - DataFrame successfully received
