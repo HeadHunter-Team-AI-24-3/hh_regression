@@ -32,7 +32,9 @@
 
 # Приложение
 
-![Демонстрация работы](assets/README/WorkProccess.gif)
+![Демонстрация работы1](assets/README/WorkProccess1.gif)
+
+![Демонстрация работы2](assets/README/WorkProccess.gif)
 
 [Via GIPHY](https://giphy.com/gifs/RBjaaYDkqbdl5YBLS)
 

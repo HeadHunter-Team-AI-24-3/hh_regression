@@ -1,5 +1,6 @@
 import logging
 import base64
+import pandas as pd
 import os
 import streamlit as st
 import requests
@@ -7,9 +8,12 @@ import pickle
 
 logger = logging.getLogger(__name__)
 
-# Если запускаете через Docker то раскоментируйте нижню строку и закоментируйте строк №10
-# FASTAPI_HOST = "http://fastapi:8000/"
-FASTAPI_HOST = "http://127.0.0.1:8000/"
+running_in_docker = os.getenv("RUNNING_IN_DOCKER", "false").lower() == "true"
+FASTAPI_HOST = ""
+if (running_in_docker):
+    FASTAPI_HOST = "http://fastapi:8000/"
+else:
+    FASTAPI_HOST = "http://127.0.0.1:8000/"
 headers = {'Content-Type': 'application/octet-stream', 'User-Agent':'*'}
 
 def set_logo_md():
@@ -19,7 +23,7 @@ def set_logo_md():
             return base64.b64encode(f.read()).decode("utf-8")
 
     # Путь к вашему SVG файлу
-    svg_path = os.path.join(os.getcwd(), '..', 'assets', 'README', 'Logo.svg')
+    svg_path = os.path.join(os.getcwd(), 'assets', 'Logo.svg')
 
     # Преобразуем SVG в base64
     svg_base64 = svg_to_base64(svg_path)
