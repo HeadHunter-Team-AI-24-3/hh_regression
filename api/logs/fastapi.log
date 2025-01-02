@@ -1,0 +1,131 @@
+2024-12-27 10:51:45,323 - app - INFO - Call to /upload_dataframe
+2024-12-27 10:51:45,334 - app - INFO - Content received with size: 0 bytes
+2024-12-27 10:51:45,338 - app - ERROR - Error processing DataFrame: Ran out of input
+2024-12-27 10:59:57,759 - app - INFO - Call to /upload_dataframe
+2024-12-27 10:59:57,767 - app - INFO - Content received with size: 1732 bytes
+2024-12-27 10:59:57,768 - app - ERROR - Error processing DataFrame: unpickling stack underflow
+2024-12-27 11:00:47,452 - app - INFO - Call to /upload_dataframe
+2024-12-27 11:00:47,457 - app - INFO - Content received with size: 1731 bytes
+2024-12-27 11:00:47,458 - app - ERROR - Error processing DataFrame: invalid load key, '\x27'.
+2024-12-27 11:02:20,988 - app - INFO - Call to /upload_dataframe
+2024-12-27 11:02:20,990 - app - INFO - Content received with size: 1729 bytes
+2024-12-27 11:02:20,990 - app - ERROR - Error processing DataFrame: invalid load key, '\x5c'.
+2024-12-27 11:05:26,006 - app - INFO - Call to /upload_dataframe
+2024-12-27 11:05:26,009 - app - INFO - Content received with size: 903 bytes
+2024-12-27 11:05:26,010 - app - ERROR - Error processing DataFrame: pickle data was truncated
+2024-12-27 11:10:38,936 - app - INFO - Call to /get_columns
+2024-12-27 11:10:38,949 - app - ERROR - DataFrame is empty or not initialized
+2024-12-27 11:35:10,631 - app - INFO - Call to /upload_dataframe
+2024-12-27 11:35:10,637 - app - INFO - Content received with size: 30 bytes
+2024-12-27 11:35:10,642 - app - ERROR - Error processing DataFrame: invalid load key, '{'.
+2024-12-27 11:37:55,270 - app - INFO - Call to /upload_dataframe
+2024-12-27 11:37:56,791 - app - INFO - Content received with size: 89609843 bytes
+2024-12-27 11:37:58,342 - app - INFO - DataFrame successfully received
+2024-12-27 14:40:08,147 - app - INFO - Call to /upload_dataframe
+2024-12-27 14:40:08,562 - app - INFO - Content received with size: 89609843 bytes
+2024-12-27 14:40:09,759 - app - INFO - DataFrame successfully received
+2024-12-27 14:44:09,367 - app - INFO - Call to /upload_dataframe
+2024-12-27 14:44:09,827 - app - INFO - Content received with size: 89609843 bytes
+2024-12-27 14:44:10,949 - app - INFO - DataFrame successfully received
+2024-12-27 16:23:52,960 - app - INFO - Call to /upload_dataframe
+2024-12-27 16:23:53,295 - app - INFO - Content received with size: 89609843 bytes
+2024-12-27 16:23:53,717 - app - INFO - DataFrame successfully received
+2024-12-27 16:25:14,023 - app - INFO - Call to /upload_dataframe
+2024-12-27 16:25:15,055 - app - INFO - Content received with size: 89609843 bytes
+2024-12-27 16:25:16,920 - app - INFO - DataFrame successfully received
+2024-12-27 16:37:05,463 - app - INFO - Call to /upload_dataframe
+2024-12-27 16:37:05,816 - app - INFO - Content received with size: 89609843 bytes
+2024-12-27 16:37:06,790 - app - INFO - DataFrame successfully received
+2024-12-27 19:47:03,727 - app - INFO - Call to /upload_dataframe
+2024-12-27 19:47:03,843 - app - INFO - Content received with size: 89609843 bytes
+2024-12-27 19:47:04,071 - app - INFO - DataFrame successfully received
+2024-12-27 19:49:57,398 - app - INFO - Call to /upload_dataframe
+2024-12-27 19:49:57,496 - app - INFO - Content received with size: 89609843 bytes
+2024-12-27 19:49:57,797 - app - INFO - DataFrame successfully received
+2024-12-27 20:20:00,462 - app - INFO - Call to /upload_dataframe
+2024-12-27 20:20:00,591 - app - INFO - Content received with size: 89609843 bytes
+2024-12-27 20:20:00,926 - app - INFO - DataFrame successfully received
+2024-12-27 21:09:58,733 - app - INFO - Call to /upload_dataframe
+2024-12-27 21:09:58,867 - app - INFO - Content received with size: 89609843 bytes
+2024-12-27 21:09:59,231 - app - INFO - DataFrame successfully received
+2024-12-27 22:42:39,934 - app - INFO - Call to /upload_dataframe
+2024-12-27 22:42:39,935 - app - INFO - Content received with size: 938 bytes
+2024-12-27 22:42:40,323 - app - INFO - DataFrame successfully received
+2024-12-27 22:43:06,976 - app - INFO - Call to /upload_dataframe
+2024-12-27 22:43:07,081 - app - INFO - Content received with size: 89609843 bytes
+2024-12-27 22:43:07,334 - app - INFO - DataFrame successfully received
+2024-12-30 13:32:17,935 - app - INFO - Call to /upload_dataframe
+2024-12-30 13:32:18,053 - app - INFO - Content received with size: 89609843 bytes
+2024-12-30 13:32:18,597 - app - INFO - DataFrame successfully received
+2024-12-30 14:48:57,162 - app - INFO - Call to /get_dataframe
+2024-12-30 14:48:57,163 - app - ERROR - DataFrame is empty or not initialized
+2024-12-30 14:48:57,163 - app - ERROR - Error getting DataFrame: 404: DataFrame is empty or not initialized
+2024-12-30 14:50:06,851 - app - INFO - Call to /upload_dataframe
+2024-12-30 14:50:06,963 - app - INFO - Content received with size: 89609843 bytes
+2024-12-30 14:50:07,194 - app - INFO - DataFrame successfully received
+2024-12-30 14:50:10,351 - app - INFO - Call to /get_dataframe
+2024-12-30 14:50:10,649 - app - INFO - DataFrame successfully sent
+2024-12-30 14:53:45,560 - app - INFO - Call to /get_dataframe
+2024-12-30 14:53:45,774 - app - INFO - DataFrame successfully sent
+2024-12-30 14:54:29,996 - app - INFO - Call to /get_dataframe
+2024-12-30 14:54:30,255 - app - INFO - DataFrame successfully sent
+2024-12-30 14:56:22,443 - app - INFO - Call to /get_dataframe
+2024-12-30 14:56:22,662 - app - INFO - DataFrame successfully sent
+2024-12-30 15:07:45,696 - app - INFO - Call to /get_dataframe
+2024-12-30 15:07:46,094 - app - INFO - DataFrame successfully sent
+2024-12-30 15:25:14,022 - app - INFO - Call to /get_dataframe
+2024-12-30 15:25:14,333 - app - INFO - DataFrame successfully sent
+2024-12-30 15:28:25,147 - app - INFO - Call to /get_dataframe
+2024-12-30 15:28:25,511 - app - INFO - DataFrame successfully sent
+2024-12-30 15:28:59,116 - app - INFO - Call to /get_dataframe
+2024-12-30 15:28:59,404 - app - INFO - DataFrame successfully sent
+2024-12-30 15:35:38,164 - app - INFO - Call to /get_dataframe
+2024-12-30 15:35:38,380 - app - INFO - DataFrame successfully sent
+2024-12-30 15:36:22,541 - app - INFO - Call to /get_dataframe
+2024-12-30 15:36:22,823 - app - INFO - DataFrame successfully sent
+2024-12-30 15:52:10,984 - app - INFO - Call to /get_dataframe
+2024-12-30 15:52:11,265 - app - INFO - DataFrame successfully sent
+2024-12-30 15:52:47,504 - app - INFO - Call to /get_dataframe
+2024-12-30 15:52:47,788 - app - INFO - DataFrame successfully sent
+2024-12-30 15:53:12,869 - app - INFO - Call to /get_dataframe
+2024-12-30 15:53:13,147 - app - INFO - DataFrame successfully sent
+2024-12-30 15:54:06,407 - app - INFO - Call to /get_dataframe
+2024-12-30 15:54:06,642 - app - INFO - DataFrame successfully sent
+2024-12-30 17:37:42,274 - app - INFO - Call to /get_dataframe
+2024-12-30 17:37:42,280 - app - ERROR - DataFrame is empty or not initialized
+2024-12-30 17:37:42,280 - app - ERROR - Error getting DataFrame: 400: DataFrame is empty or not initialized
+2024-12-30 17:44:53,910 - app - INFO - Call to /get_dataframe
+2024-12-30 17:44:53,911 - app - ERROR - DataFrame is empty or not initialized
+2024-12-30 17:44:53,939 - app - ERROR - Error getting DataFrame: 400: DataFrame is empty or not initialized
+2024-12-30 17:45:00,239 - app - INFO - Call to /get_dataframe
+2024-12-30 17:45:00,239 - app - ERROR - DataFrame is empty or not initialized
+2024-12-30 17:45:00,239 - app - ERROR - Error getting DataFrame: 400: DataFrame is empty or not initialized
+2024-12-30 17:45:16,798 - app - INFO - Call to /upload_dataframe
+2024-12-30 17:45:16,904 - app - INFO - Content received with size: 89609843 bytes
+2024-12-30 17:45:17,165 - app - INFO - DataFrame successfully received
+2024-12-30 17:45:23,858 - app - INFO - Call to /get_dataframe
+2024-12-30 17:45:24,169 - app - INFO - DataFrame successfully sent
+2024-12-30 17:49:49,677 - app - INFO - Call to /get_dataframe
+2024-12-30 17:49:49,975 - app - INFO - DataFrame successfully sent
+2024-12-30 17:50:25,675 - app - INFO - Call to /get_dataframe
+2024-12-30 17:50:26,062 - app - INFO - DataFrame successfully sent
+2024-12-30 17:50:26,826 - app - INFO - Call to /get_dataframe
+2024-12-30 17:50:26,983 - app - INFO - DataFrame successfully sent
+2024-12-30 17:50:29,546 - app - INFO - Call to /get_dataframe
+2024-12-30 17:50:29,707 - app - INFO - DataFrame successfully sent
+2024-12-30 17:50:30,451 - app - INFO - Call to /get_dataframe
+2024-12-30 17:50:30,613 - app - INFO - DataFrame successfully sent
+2024-12-30 17:50:32,881 - app - INFO - Call to /get_dataframe
+2024-12-30 17:50:33,065 - app - INFO - DataFrame successfully sent
+2024-12-30 17:50:33,789 - app - INFO - Call to /get_dataframe
+2024-12-30 17:50:33,943 - app - INFO - DataFrame successfully sent
+2024-12-30 17:50:34,808 - app - INFO - Call to /get_dataframe
+2024-12-30 17:50:34,983 - app - INFO - DataFrame successfully sent
+2024-12-30 17:50:35,749 - app - INFO - Call to /get_dataframe
+2024-12-30 17:50:35,952 - app - INFO - DataFrame successfully sent
+2024-12-30 18:01:42,982 - app - INFO - Call to /get_dataframe
+2024-12-30 18:01:43,357 - app - INFO - DataFrame successfully sent
+2025-01-02 16:05:44,765 - app - INFO - Call to /get_dataframe
+2025-01-02 16:05:45,591 - app - INFO - DataFrame successfully sent
+2025-01-02 16:08:13,158 - app - INFO - Call to /get_dataframe
+2025-01-02 16:08:13,643 - app - INFO - DataFrame successfully sent
