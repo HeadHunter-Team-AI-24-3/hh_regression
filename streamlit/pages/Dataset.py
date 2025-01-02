@@ -3,40 +3,50 @@ import pandas as pd
 import requests
 import matplotlib.pyplot as plt
 import pickle
+import os
+import logging
+from utils import *
 
+logger = logging.getLogger(__name__)
+
+# Если запускаете через Docker то раскоментируйте нижню строку и закоментируйте строк №10
+# FASTAPI_HOST = "http://fastapi:8000/"
 FASTAPI_HOST = "http://127.0.0.1:8000/"
-headers = {'Content-Type': 'application/octet-stream'}
-st.session_state.df = pd.DataFrame()
+headers = {'Content-Type': 'application/octet-stream', 'User-Agent':'*'}
 
 st.set_page_config(
     page_title="Датасет",   # Название в меню
     page_icon="",           # Иконка в меню
     layout="wide"
 )
+
+set_logo_md()
+
+st.sidebar.header("Меню приложений")
+
+if 'df' not in st.session_state:
+    get_dataFrame()
+
+logger.info("Dataset page successfully opened")
+
 st.title("Dataset Page")
-st.write("Добро пожаловать на страницу где расположена информация по текущему датасету!")
+st.header("Добро пожаловать на страницу где расположена информация по текущему датасету!")
 
-# Функция для отправки CSV файла на сервер
-def send_csv_to_backend(data_frame):
-    api_url = FASTAPI_HOST + "upload_dataframe"
-    df_serialized = pickle.dumps(data_frame)
-    try:
-        response = requests.post(api_url, data=df_serialized, headers=headers)
+st.subheader("Если у вас нет вашего датасета")
+st.write("Если у вас нет датасета, но вы хотите посмотреть работу нашего приложения, то можете воспользоваться нашим датасетом, который был сокращен до размера < 200 Mb.")
+if st.button("Использовать наш датасет"):
+    file_path = os.path.abspath('.') + "/base_datassets/final_data_converted.csv"
 
-        if response.status_code == 200:
-            st.success('Файл успешно загружен в API')
-            st.session_state.df = data_frame
-            st.json(response.json())
-        else:
-            st.error(f"Ошибка при загрузке файла: {response.status_code}, {response.text}")
-    except requests.exceptions.RequestException as e:
-        st.error(f"Ошибка соединения с API: {e}")
+    # Чтение файла
+    df = pd.read_csv(file_path)
+    send_csv_to_backend(df)
 
-st.write("Загрузка CSV файла на сервер")
+st.subheader("Загрузка CSV файла на сервер")
 
 uploaded_file = st.file_uploader("Выберите CSV файл для отправки", type=["csv"])
 
 if uploaded_file is not None:
+    logger.info("Try to upload file success")
     df = pd.read_csv(uploaded_file)
     st.write("Предпросмотр данных из файла:")
     st.write("Первые 5 строк вашего файла:")
@@ -45,9 +55,7 @@ if uploaded_file is not None:
             send_csv_to_backend(df)
 
 if not st.session_state.df.empty:
-    st.dataframe(st.session_state.df)
     df = st.session_state.df
-    st.write("Данные с сервера:", df)
 
     # Заголовок
     st.title("Текущий Датасет")

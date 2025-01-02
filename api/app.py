@@ -59,6 +59,24 @@ async def upload_dataframe(request: Request):
         logger.error(f"Error processing DataFrame: {str(e)}")
         raise HTTPException(status_code=400, detail=f"Error processing DataFrame: {str(e)}")
 
+@app.get("/get_dataframe")
+async def get_dataframe():
+    global df
+    try:
+        logger.info("Call to /get_dataframe")
+
+        if df is None or df.empty:
+            logger.error("DataFrame is empty or not initialized")
+            raise HTTPException(status_code=400, detail="DataFrame is empty or not initialized")
+
+        df_serialized = pickle.dumps(df)
+
+        logger.info("DataFrame successfully sent")
+        return {"df": df_serialized.hex()}
+    except Exception as e:
+        logger.error(f"Error getting DataFrame: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Error gettingDataFrame: {str(e)}")
+
 
 @app.post("/get_columns")
 async def get_columns(request: ColumnsRequest):

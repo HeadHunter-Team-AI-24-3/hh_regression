@@ -1,0 +1,347 @@
+openapi: 3.0.2
+info:
+  title: Model Management API
+  version: 1.0.0
+paths:
+  /upload_dataframe:
+    post:
+      summary: Upload a serialized DataFrame
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: DataFrame received successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    
+        '400':
+          description: Bad request - unable to process DataFrame
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+  /get_columns:
+    post:
+      summary: Get specific columns from the uploaded DataFrame
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: Columns retrieved successfully
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Bad request - error retrieving columns
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '404':
+          description: DataFrame not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+  /train_model:
+    post:
+      summary: Train a model with given hyperparameters
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrainModelRequest'
+      responses:
+        '200':
+          description: Model trained successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  status:
+                    type: string
+                  metrics:
+                    type: object
+                    additionalProperties:
+                      type: number
+        '400':
+          description: Bad request - invalid hyperparameters or data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '500':
+          description: Internal server error during preprocessing or training
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+  /get_model_info/{model_id}:
+    get:
+      summary: Retrieve information about a specific model
+      parameters:
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Model information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  model_id:
+                    type: string
+                  model_name:
+                    type: string
+                  hyperparameters:
+                    type: object
+                  metrics:
+                    type: object
+                    additionalProperties:
+                      type: number
+        '404':
+          description: Model not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+  /get_models_info:
+    get:
+      summary: Retrieve information about all models
+      responses:
+        '200':
+          description: Models information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    model_id:
+                      type: string
+                    model_name:
+                      type: string
+                    hyperparameters:
+                      type: object
+                    metrics:
+                      type: object
+                      additionalProperties:
+                        type: number
+        '404':
+          description: No models found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+  /get_learning_curves/{model_id}:
+    get:
+      summary: Retrieve learning curves for a specific model
+      parameters:
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Learning curves retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  learning_curves:
+                    type: object
+        '404':
+          description: Model not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+  /models/{model_id}:
+    delete:
+      summary: Delete a specific model
+      parameters:
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Model deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: Model not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+  /models:
+    delete:
+      summary: Delete all models
+      responses:
+        '200':
+          description: All models deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /predict/{model_id}:
+    post:
+      summary: Generate predictions using a specific model
+      parameters:
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: Predictions generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  predictions:
+                    type: array
+                    items:
+                      type: number
+                  model_id:
+                    type: string
+        '400':
+          description: Bad request - error processing data or performing inference
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+  /compare_learning_curves/:
+    post:
+      summary: Compare learning curves for specified models
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                model_ids:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Learning curves compared successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  learning_curves_comparison:
+                    type: object
+        '400':
+          description: Bad request - invalid JSON or more than 5 models specified
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+components:
+  schemas:
+    TrainModelRequest:
+      type: object
+      properties:
+        model_id:
+          type: string
+        model_name:
+          type: string
+        hyperparameters:
+          type: object
+          additionalProperties: true
