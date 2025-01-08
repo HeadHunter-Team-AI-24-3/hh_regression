@@ -1,15 +1,16 @@
 import logging
-from fastapi import HTTPException, FastAPI, Request
-from fastapi.responses import StreamingResponse
-from io import BytesIO
-import pandas as pd
-from pydantic import BaseModel
 import pickle
-from catboost import CatBoostRegressor
-from sklearn.metrics import r2_score, root_mean_squared_error
-from preprocess import *
-from typing import Dict, Any
+from io import BytesIO
 from json import JSONDecodeError
+from typing import Any, Dict
+
+import pandas as pd
+from catboost import CatBoostRegressor
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import StreamingResponse
+from preprocess import preprocess_data, preprocess_data_for_model
+from pydantic import BaseModel
+from sklearn.metrics import r2_score, root_mean_squared_error
 
 logging.basicConfig(
     level=logging.INFO,
@@ -57,7 +58,9 @@ async def upload_dataframe(request: Request):
         return {"message": "DataFrame successfully received"}
     except Exception as e:
         logger.error(f"Error processing DataFrame: {str(e)}")
-        raise HTTPException(status_code=400, detail=f"Error processing DataFrame: {str(e)}")
+        raise HTTPException(
+            status_code=400, detail=f"Error processing DataFrame: {str(e)}")
+
 
 @app.get("/get_dataframe")
 async def get_dataframe():
@@ -67,7 +70,8 @@ async def get_dataframe():
 
         if df is None or df.empty:
             logger.error("DataFrame is empty or not initialized")
-            raise HTTPException(status_code=400, detail="DataFrame is empty or not initialized")
+            raise HTTPException(
+                status_code=400, detail="DataFrame is empty or not initialized")
 
         df_serialized = pickle.dumps(df)
 
@@ -84,7 +88,8 @@ async def get_columns(request: ColumnsRequest):
     logger.info("Call to /get_columns")
     if df is None or df.empty:
         logger.error("DataFrame is empty or not initialized")
-        raise HTTPException(status_code=404, detail="DataFrame is empty or not initialized")
+        raise HTTPException(
+            status_code=404, detail="DataFrame is empty or not initialized")
 
     try:
         logger.info(f"Columns for slicing: {str(request.columns)}")
@@ -115,10 +120,12 @@ async def train_model(request: TrainModelRequest):
         logger.info("DataFrame preprocessing succeeded")
     except Exception as e:
         logger.info("DataFrame preprocessing failed")
-        raise HTTPException(status_code=500, detail=f"Error during preprocessing: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error during preprocessing: {str(e)}")
 
     try:
-        X_train, X_val, X_test, y_train, y_val, y_test = preprocess_data_for_model(data, is_trained=True)
+        X_train, X_val, X_test, y_train, y_val, y_test = preprocess_data_for_model(
+            data, is_trained=True)
         logger.info("Train/val/test split succeeded")
     except Exception as e:
         raise HTTPException(
@@ -200,8 +207,7 @@ async def get_model_info(model_id: str):
 async def get_models_info():
     logger.info("Call to /get_models_info")
     if not models:
-        raise HTTPException(
-            status_code=404, detail=f"No models found")
+        raise HTTPException(status_code=404, detail="No models found")
     result = []
     for model_id, model_info in models.items():
         result.append({
@@ -251,7 +257,8 @@ async def delete_all_models():
 async def predict(model_id: str, request: Request):
     logger.info("Model inference")
     if model_id not in models:
-        raise HTTPException(status_code=404, detail=f"Model with ID '{model_id}' not found.")
+        raise HTTPException(
+            status_code=404, detail=f"Model with ID '{model_id}' not found.")
     try:
         dataframe_bytes = await request.body()
         input_data = pickle.loads(dataframe_bytes)
@@ -264,8 +271,10 @@ async def predict(model_id: str, request: Request):
         predictions = model.predict(X)
         return {"predictions": predictions.tolist(), "model_id": model_id}
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error processing data or performing inference: {str(e)}")
-    
+        raise HTTPException(
+            status_code=400,
+            detail=f"Error processing data or performing inference: {str(e)}")
+
 
 @app.post("/compare_learning_curves/")
 async def compare_learning_curves(request: Request):
@@ -273,22 +282,28 @@ async def compare_learning_curves(request: Request):
     try:
         request_data = await request.json()
         model_ids = request_data.get("model_ids", [])
-        
+
         if not model_ids:
-            raise HTTPException(status_code=400, detail="No model IDs provided")
+            raise HTTPException(status_code=400,
+                                detail="No model IDs provided")
 
         if len(model_ids) > 5:
-            raise HTTPException(status_code=400, detail="Cannot compare more than 5 models at once")
+            raise HTTPException(
+                status_code=400,
+                detail="Cannot compare more than 5 models at once")
 
         learning_curves = {}
         for model_id in model_ids:
             if model_id not in models:
-                raise HTTPException(status_code=404, detail=f"Model with ID '{model_id}' not found")
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Model with ID '{model_id}' not found")
             learning_curves[model_id] = models[model_id]["learning_curves"]
 
         return {"learning_curves_comparison": learning_curves}
-    
+
     except JSONDecodeError:
         raise HTTPException(status_code=400, detail="Invalid JSON format")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+        raise HTTPException(status_code=500,
+                            detail=f"An error occurred: {str(e)}")
