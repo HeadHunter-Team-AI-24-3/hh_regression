@@ -1,6 +1,7 @@
-import streamlit as st
 import json
+
 import requests
+import streamlit as st
 from pages.Dataset import FASTAPI_HOST
 
 st.set_page_config(page_title="Модель", page_icon="", layout="wide")

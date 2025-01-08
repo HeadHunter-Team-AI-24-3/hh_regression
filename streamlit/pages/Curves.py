@@ -1,6 +1,6 @@
-import streamlit as st
-import requests
 import plotly.graph_objects as go
+import requests
+import streamlit as st
 from pages.Dataset import FASTAPI_HOST
 
 st.set_page_config(page_title="Модели", page_icon="", layout="wide")
@@ -36,9 +36,7 @@ def get_learning_curves(model_id):
 
 
 def compare_learning_curves(ids):
-    response = requests.post(
-        f"{FASTAPI_HOST}/compare_learning_curves/", json={"model_ids": ids}
-    )
+    response = requests.post(f"{FASTAPI_HOST}/compare_learning_curves/", json={"model_ids": ids})
     if response.status_code == 200:
         data = response.json()
         learning_curves = data.get("learning_curves_comparison", {})
