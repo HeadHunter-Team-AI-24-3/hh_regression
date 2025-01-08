@@ -12,7 +12,11 @@ from preprocess import preprocess_data, preprocess_data_for_model
 from pydantic import BaseModel
 from sklearn.metrics import r2_score, root_mean_squared_error
 
-logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',handlers=[logging.FileHandler("logs/fastapi.log"),
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("logs/fastapi.log"),
         logging.StreamHandler()
     ]
 )
