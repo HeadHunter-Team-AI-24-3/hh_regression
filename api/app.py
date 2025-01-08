@@ -1,5 +1,6 @@
 import logging
 import pickle
+from contextlib import asynccontextmanager
 from io import BytesIO
 from json import JSONDecodeError
 from typing import Any, Dict
@@ -21,7 +22,6 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
 df = pd.DataFrame()
 models = {}
 
@@ -34,6 +34,31 @@ class TrainModelRequest(BaseModel):
     model_id: str
     model_name: str
     hyperparameters: Dict[str, Any]
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global models
+    logging.info("Runing lifespan...")
+
+    try:
+        logging.info("Upload model...")
+        model = CatBoostRegressor()
+        model.load_model("pretrained_model.cbm")
+        models["default_model"] = {
+            "id": "default_model",
+            "name": "Pretrained CatBoost",
+            "model": model,
+            "status": "loaded",
+        }
+        logging.info("Model uploaded.")
+        yield
+    finally:
+        models.clear()
+        logging.info("Stop lifespan.")
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 @app.post("/upload_dataframe")
@@ -131,6 +156,7 @@ async def train_model(request: TrainModelRequest):
 
     try:
         model.fit(X_train, y_train, eval_set=(X_val, y_val), verbose=True, plot=False)
+        model.save_model("pretrained_model.cbm")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error during model training: {str(e)}")
 
