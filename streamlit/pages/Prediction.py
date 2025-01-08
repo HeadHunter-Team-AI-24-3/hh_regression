@@ -1,7 +1,8 @@
-import streamlit as st
+import pickle
+
 import pandas as pd
 import requests
-import pickle
+import streamlit as st
 from pages.Dataset import FASTAPI_HOST
 
 st.set_page_config(
@@ -10,9 +11,7 @@ st.set_page_config(
     layout="wide",
 )
 st.title("Страница для выполнения предсказаний")
-st.write(
-    "На этой странице можно выполнять предсказание с использованием обученных моделей"
-)
+st.write("На этой странице можно выполнять предсказание с использованием обученных моделей")
 
 
 def predict(model_id, input_data):
@@ -22,7 +21,7 @@ def predict(model_id, input_data):
     if response.status_code == 200:
         predictions = response.json().get("predictions", [])
         st.success(f"Предсказания для модели {model_id} выполнены успешно")
-        st.write(f"Предсказания: ")
+        st.write("Предсказания: ")
         st.write(predictions)
     else:
         st.error(f"Ошибка: {response.status_code}, {response.text}")
@@ -30,9 +29,7 @@ def predict(model_id, input_data):
 
 container = st.container(border=True)
 model_id = container.text_input("ID модели")
-uploaded_file = container.file_uploader(
-    "Загрузите CSV файл для предсказания", type=["csv"]
-)
+uploaded_file = container.file_uploader("Загрузите CSV файл для предсказания", type=["csv"])
 if container.button("Выполнить предсказание"):
     if not model_id:
         container.error("Укажите ID модели")

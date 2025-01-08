@@ -117,7 +117,10 @@ async def train_model(request: TrainModelRequest):
         X_train, X_val, X_test, y_train, y_val, y_test = preprocess_data_for_model(data, is_trained=True)
         logger.info("Train/val/test split succeeded")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error during preprocessing data for model: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error during preprocessing data for model: {str(e)}",
+        )
 
     try:
         logger.info("Beginning model training")
@@ -243,7 +246,10 @@ async def predict(model_id: str, request: Request):
         predictions = model.predict(X)
         return {"predictions": predictions.tolist(), "model_id": model_id}
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error processing data or performing inference: {str(e)}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Error processing data or performing inference: {str(e)}",
+        )
 
 
 @app.post("/compare_learning_curves/")

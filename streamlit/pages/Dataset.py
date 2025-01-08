@@ -1,30 +1,24 @@
-import streamlit as st
-import pandas as pd
-import requests
-import matplotlib.pyplot as plt
-import pickle
-import os
 import logging
-from utils import *
+import os
+
+import pandas as pd
+import streamlit as st
+from utils import get_dataFrame, send_csv_to_backend, set_logo_md
 
 logger = logging.getLogger(__name__)
 
 # Если запускаете через Docker то раскоментируйте нижню строку и закоментируйте строк №10
 # FASTAPI_HOST = "http://fastapi:8000/"
 FASTAPI_HOST = "http://127.0.0.1:8000/"
-headers = {'Content-Type': 'application/octet-stream', 'User-Agent':'*'}
+headers = {"Content-Type": "application/octet-stream", "User-Agent": "*"}
 
-st.set_page_config(
-    page_title="Датасет",   # Название в меню
-    page_icon="",           # Иконка в меню
-    layout="wide"
-)
+st.set_page_config(page_title="Датасет", page_icon="", layout="wide")  # Название в меню  # Иконка в меню
 
 set_logo_md()
 
 st.sidebar.header("Меню приложений")
 
-if 'df' not in st.session_state:
+if "df" not in st.session_state:
     get_dataFrame()
 
 logger.info("Dataset page successfully opened")
@@ -33,11 +27,12 @@ st.title("Dataset Page")
 st.header("Добро пожаловать на страницу где расположена информация по текущему датасету!")
 
 st.subheader("Если у вас нет вашего датасета")
-st.write("Если у вас нет датасета, но вы хотите посмотреть работу нашего приложения, то можете воспользоваться нашим датасетом, который был сокращен до размера < 200 Mb.")
+st.write(
+    "Если у вас нет датасета, но вы хотите посмотреть работу нашего приложения, то можете воспользоваться нашим датасетом, который был сокращен до размера < 200 Mb."
+)
 if st.button("Использовать наш датасет"):
-    file_path = os.path.abspath('.') + "/base_datassets/final_data_converted.csv"
+    file_path = os.path.abspath(".") + "/base_datassets/final_data_converted.csv"
 
-    # Чтение файла
     df = pd.read_csv(file_path)
     send_csv_to_backend(df)
 
@@ -52,7 +47,7 @@ if uploaded_file is not None:
     st.write("Первые 5 строк вашего файла:")
     st.write(df.head())
     if st.button("Отправить файл на сервер"):
-            send_csv_to_backend(df)
+        send_csv_to_backend(df)
 
 if not st.session_state.df.empty:
     df = st.session_state.df
