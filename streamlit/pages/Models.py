@@ -1,8 +1,10 @@
 import json
-
+import logging
 import requests
 import streamlit as st
 from pages.Dataset import FASTAPI_HOST
+
+logger = logging.getLogger(__name__)
 
 st.set_page_config(page_title="Модель", page_icon="", layout="wide")
 
@@ -11,6 +13,7 @@ tab1, tab2, tab3 = st.tabs(["✏️ Создание", "📁 Информаци�
 
 
 def train_model(model_id, model_name, hyperparameters):
+    logger.info(f"Starting model training")
     param = {
         "model_id": model_id,
         "model_name": model_name,
@@ -18,45 +21,59 @@ def train_model(model_id, model_name, hyperparameters):
     }
     response = requests.post(f"{FASTAPI_HOST}/train_model", json=param)
     if response.status_code == 200:
+        logger.info(f"The model has been successfully trained")
         st.success(f"Модель {model_name} успешно обучена!")
         st.json(response.json())
     else:
+        logger.error(f"Error when training the model ")
         st.error(f"Ошибка: {response.status_code}, {response.text}")
 
 
 def get_model_info(model_id):
+    logger.info(f"Getting information about the model {model_id}")
     response = requests.get(f"{FASTAPI_HOST}/get_model_info/{model_id}")
     if response.status_code == 200:
+        logger.info(f"Information about the model was successfully received")
         st.json(response.json())
     else:
+        logger.error(f"Error when getting information about the model")
         st.error(f"Ошибка: {response.status_code}, {response.text}")
 
 
 def list_all_models():
+    logger.info("Requesting a list of all models")
     response = requests.get(f"{FASTAPI_HOST}/get_models_info")
     if response.status_code == 200:
+        logger.info("The list of all models was successfully received")
         models = response.json()
         st.subheader("Список всех моделей:")
         for model in models:
             st.json(model)
             st.write("---")
     else:
+        logger.error("An error occurred when getting the list of models.")
         st.error(f"Ошибка: {response.status_code}, {response.text}")
 
 
 def delete_model(model_id):
+    logger.info(f"Deleting a model {model_id}")
     response = requests.delete(f"{FASTAPI_HOST}/models/{model_id}")
     if response.status_code == 200:
+        logger.info(f"Model successfully deleted")
         st.success(f"Модель {model_id} успешно удалена!")
     else:
+        logger.error(f"Error deleting the model")
         st.error(f"Ошибка: {response.status_code}, {response.text}")
 
 
 def delete_all_models():
+    logger.info(f"Deleting all models")
     response = requests.delete(f"{FASTAPI_HOST}/models")
     if response.status_code == 200:
+        logger.info(f"All models have been successfully deleted")
         st.success("Все модели успешно удалены!")
     else:
+        logger.info(f"An error occurred when deleting models")
         st.error(f"Ошибка: {response.status_code}, {response.text}")
 
 
