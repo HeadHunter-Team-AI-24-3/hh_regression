@@ -1,7 +1,10 @@
+import logging
 import plotly.graph_objects as go
 import requests
 import streamlit as st
 from pages.Dataset import FASTAPI_HOST
+
+logger = logging.getLogger(__name__)
 
 st.set_page_config(page_title="Модели", page_icon="", layout="wide")
 
@@ -10,9 +13,11 @@ tab1, tab2 = st.tabs(["📈 Кривые обучения", "📈 Сравнен
 
 
 def get_learning_curves(model_id):
+    logger.info(f"Requesting learning curves for the model")
     response = requests.get(f"{FASTAPI_HOST}/get_learning_curves/{model_id}")
     if response.status_code == 200:
         learning_curves = response.json().get("learning_curves", {})
+        logger.info(f"Learning curves have been successfully obtained")
         fig = go.Figure()
         fig.add_trace(
             go.Scatter(
@@ -32,14 +37,17 @@ def get_learning_curves(model_id):
         )
         st.plotly_chart(fig)
     else:
+        logger.error(f"Error in obtaining learning curves")
         st.error(f"Ошибка: {response.status_code}, {response.text}")
 
 
 def compare_learning_curves(ids):
+    logger.info(f"Comparison of learning curves for models {ids}")
     response = requests.post(f"{FASTAPI_HOST}/compare_learning_curves/", json={"model_ids": ids})
     if response.status_code == 200:
         data = response.json()
         learning_curves = data.get("learning_curves_comparison", {})
+        logger.info(f"Learning curves have been successfully obtained")
         fig = go.Figure()
         for model_id, curves in learning_curves.items():
             iterations = curves["iterations"]
@@ -72,6 +80,7 @@ def compare_learning_curves(ids):
         st.plotly_chart(fig, use_container_width=True)
 
     else:
+        logger.error(f"Error in obtaining learning curves")
         st.error(f"Ошибка: {response.status_code}, {response.text}")
 
 
