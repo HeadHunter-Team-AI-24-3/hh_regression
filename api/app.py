@@ -39,18 +39,36 @@ class TrainModelRequest(BaseModel):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global models
-    logging.info("Runing lifespan...")
+    logging.info("Running lifespan...")
 
     try:
         logging.info("Upload model...")
+
         model = CatBoostRegressor()
         model.load_model("pretrained_model.cbm")
-        models["default_model"] = {
+
+        hyperparameters = {"iterations": 100, "learning_rate": 0.1, "depth": 6}
+
+        rmse = 72576.98492
+        r2 = 0.4749209
+
+        learning_curves = {
+            "iterations": [],
+            "train_rmse": [],
+            "test_rmse": [],
+        }
+
+        model_info = {
             "id": "default_model",
             "name": "Pretrained CatBoost",
             "model": model,
             "status": "loaded",
+            "hyperparameters": hyperparameters,
+            "metrics": {"RMSE": rmse, "R2": r2},
+            "learning_curves": learning_curves,
         }
+
+        models["default_model"] = model_info
         logging.info("Model uploaded.")
         yield
     finally:
@@ -156,7 +174,6 @@ async def train_model(request: TrainModelRequest):
 
     try:
         model.fit(X_train, y_train, eval_set=(X_val, y_val), verbose=True, plot=False)
-        model.save_model("pretrained_model.cbm")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error during model training: {str(e)}")
 
