@@ -3,7 +3,7 @@ import pickle
 from contextlib import asynccontextmanager
 from io import BytesIO
 from json import JSONDecodeError
-from typing import Any, Dict, List
+from typing import Annotated, Any, Dict, List
 
 import pandas as pd
 from catboost import CatBoostRegressor
@@ -105,7 +105,7 @@ app = FastAPI(lifespan=lifespan)
 
 
 @app.post("/upload_dataframe", response_model=SuccessResponse, responses={400: {"model": ErrorResponse}})
-async def upload_dataframe(request: Request):
+async def upload_dataframe(request: Annotated[Request, Request]) -> SuccessResponse:
     global df
     try:
         logger.info("Call to /upload_dataframe")
@@ -129,7 +129,7 @@ async def upload_dataframe(request: Request):
 
 
 @app.get("/get_dataframe", response_model=DataFrameResponse, responses={400: {"model": ErrorResponse}})
-async def get_dataframe():
+async def get_dataframe() -> DataFrameResponse:
     global df
     try:
         logger.info("Call to /get_dataframe")
@@ -155,7 +155,7 @@ async def get_dataframe():
         404: {"model": ErrorResponse},
     },
 )
-async def get_columns(request: ColumnsRequest):
+async def get_columns(request: Annotated[ColumnsRequest, Request]) -> StreamingResponse:
     global df
     logger.info("Call to /get_columns")
 
@@ -177,9 +177,13 @@ async def get_columns(request: ColumnsRequest):
 @app.post(
     "/train_model",
     response_model=ModelResponse,
-    responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}, 500: {"model": ErrorResponse}},
+    responses={
+        400: {"model": ErrorResponse},
+        404: {"model": ErrorResponse},
+        500: {"model": ErrorResponse},
+    },
 )
-async def train_model(request: TrainModelRequest):
+async def train_model(request: Annotated[TrainModelRequest, BaseModel]) -> ModelResponse:
     global df
     global models
 
@@ -249,7 +253,7 @@ async def train_model(request: TrainModelRequest):
 
 
 @app.get("/get_model_info/{model_id}", response_model=ModelInfo, responses={404: {"model": ErrorResponse}})
-async def get_model_info(model_id: str):
+async def get_model_info(model_id: Annotated[str, Any]) -> ModelInfo:
     logger.info("Call to /get_model_info")
     if model_id not in models:
         raise HTTPException(status_code=404, detail=f"Model with id {model_id} not found")
@@ -264,7 +268,7 @@ async def get_model_info(model_id: str):
 
 
 @app.get("/get_models_info", response_model=List[ModelInfo], responses={404: {"model": ErrorResponse}})
-async def get_models_info():
+async def get_models_info() -> List[ModelInfo]:
     logger.info("Call to /get_models_info")
     if not models:
         raise HTTPException(status_code=404, detail="No models found")
@@ -282,7 +286,7 @@ async def get_models_info():
 
 
 @app.get("/get_learning_curves/{model_id}", response_model=LearningCurves, responses={404: {"model": ErrorResponse}})
-async def get_learning_curves(model_id: str):
+async def get_learning_curves(model_id: Annotated[str, Any]) -> LearningCurves:
     logger.info("Call to /get_learning_curves")
     if model_id not in models:
         raise HTTPException(status_code=404, detail=f"Model with id {model_id} not found")
@@ -293,7 +297,7 @@ async def get_learning_curves(model_id: str):
 
 
 @app.delete("/models/{model_id}", response_model=DeleteModelResponse, responses={404: {"model": ErrorResponse}})
-async def delete_model(model_id: str):
+async def delete_model(model_id: Annotated[str, Any]) -> DeleteModelResponse:
     logger.info(f"Deleting model {model_id}")
     global models
     if model_id in models:
@@ -304,7 +308,7 @@ async def delete_model(model_id: str):
 
 
 @app.delete("/models", response_model=DeleteModelResponse)
-async def delete_all_models():
+async def delete_all_models() -> DeleteModelResponse:
     logger.info("Deleting all models")
     global models
     models.clear()
@@ -316,7 +320,7 @@ async def delete_all_models():
     response_model=PredictionResponse,
     responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
 )
-async def predict(model_id: str, request: Request):
+async def predict(model_id: Annotated[str, Any], request: Annotated[Request, Any]) -> PredictionResponse:
     logger.info("Model inference")
     if model_id not in models:
         raise HTTPException(status_code=404, detail=f"Model with ID '{model_id}' not found.")
@@ -343,7 +347,7 @@ async def predict(model_id: str, request: Request):
     response_model=LearningCurvesComparisonResponse,
     responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}, 500: {"model": ErrorResponse}},
 )
-async def compare_learning_curves(request: Request):
+async def compare_learning_curves(request: Annotated[Request, Any]) -> LearningCurvesComparisonResponse:
     logger.info("Comparing learning curves for multiple experiments")
     try:
         request_data = await request.json()
