@@ -3,7 +3,7 @@ import pickle
 from contextlib import asynccontextmanager
 from io import BytesIO
 from json import JSONDecodeError
-from typing import Any, Dict
+from typing import Annotated, Any, Dict, List
 
 import pandas as pd
 from catboost import CatBoostRegressor
@@ -36,6 +36,49 @@ class TrainModelRequest(BaseModel):
     hyperparameters: Dict[str, Any]
 
 
+class SuccessResponse(BaseModel):
+    message: str
+
+
+class ErrorResponse(BaseModel):
+    detail: str
+
+
+class DataFrameResponse(BaseModel):
+    df: str
+
+
+class ModelResponse(BaseModel):
+    id: str
+    name: str
+    status: str
+    metrics: Dict[str, float]
+
+
+class ModelInfo(BaseModel):
+    model_id: str
+    model_name: str
+    hyperparameters: Dict[str, Any]
+    metrics: Dict[str, float]
+
+
+class LearningCurves(BaseModel):
+    learning_curves: Dict[str, List[Any]]
+
+
+class DeleteModelResponse(BaseModel):
+    message: str
+
+
+class PredictionResponse(BaseModel):
+    predictions: List[float]
+    model_id: str
+
+
+class LearningCurvesComparisonResponse(BaseModel):
+    learning_curves_comparison: Dict[str, Dict[str, List[float]]]
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global models
@@ -61,8 +104,8 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 
-@app.post("/upload_dataframe")
-async def upload_dataframe(request: Request):
+@app.post("/upload_dataframe", response_model=SuccessResponse, responses={400: {"model": ErrorResponse}})
+async def upload_dataframe(request: Annotated[Request, Request]) -> SuccessResponse:
     global df
     try:
         logger.info("Call to /upload_dataframe")
@@ -79,13 +122,14 @@ async def upload_dataframe(request: Request):
 
         logger.info("DataFrame successfully received")
         return {"message": "DataFrame successfully received"}
+
     except Exception as e:
         logger.error(f"Error processing DataFrame: {str(e)}")
         raise HTTPException(status_code=400, detail=f"Error processing DataFrame: {str(e)}")
 
 
-@app.get("/get_dataframe")
-async def get_dataframe():
+@app.get("/get_dataframe", response_model=DataFrameResponse, responses={400: {"model": ErrorResponse}})
+async def get_dataframe() -> DataFrameResponse:
     global df
     try:
         logger.info("Call to /get_dataframe")
@@ -100,19 +144,27 @@ async def get_dataframe():
         return {"df": df_serialized.hex()}
     except Exception as e:
         logger.error(f"Error getting DataFrame: {str(e)}")
-        raise HTTPException(status_code=400, detail=f"Error gettingDataFrame: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Error getting DataFrame: {str(e)}")
 
 
-@app.post("/get_columns")
-async def get_columns(request: ColumnsRequest):
+@app.post(
+    "/get_columns",
+    responses={
+        200: {"content": {"application/octet-stream": {}}},
+        400: {"model": ErrorResponse},
+        404: {"model": ErrorResponse},
+    },
+)
+async def get_columns(request: Annotated[ColumnsRequest, Request]) -> StreamingResponse:
     global df
     logger.info("Call to /get_columns")
+
     if df is None or df.empty:
         logger.error("DataFrame is empty or not initialized")
         raise HTTPException(status_code=404, detail="DataFrame is empty or not initialized")
 
     try:
-        logger.info(f"Columns for slicing: {str(request.columns)}")
+        logger.info(f"Columns for slicing: {request.columns}")
         result_df = df[request.columns]
     except KeyError as e:
         logger.error(f"Column {str(e)} not found")
@@ -122,8 +174,16 @@ async def get_columns(request: ColumnsRequest):
     return StreamingResponse(BytesIO(pickle_data), media_type="application/octet-stream")
 
 
-@app.post("/train_model")
-async def train_model(request: TrainModelRequest):
+@app.post(
+    "/train_model",
+    response_model=ModelResponse,
+    responses={
+        400: {"model": ErrorResponse},
+        404: {"model": ErrorResponse},
+        500: {"model": ErrorResponse},
+    },
+)
+async def train_model(request: Annotated[TrainModelRequest, BaseModel]) -> ModelResponse:
     global df
     global models
 
@@ -192,8 +252,8 @@ async def train_model(request: TrainModelRequest):
     return response
 
 
-@app.get("/get_model_info/{model_id}")
-async def get_model_info(model_id: str):
+@app.get("/get_model_info/{model_id}", response_model=ModelInfo, responses={404: {"model": ErrorResponse}})
+async def get_model_info(model_id: Annotated[str, Any]) -> ModelInfo:
     logger.info("Call to /get_model_info")
     if model_id not in models:
         raise HTTPException(status_code=404, detail=f"Model with id {model_id} not found")
@@ -207,8 +267,8 @@ async def get_model_info(model_id: str):
     }
 
 
-@app.get("/get_models_info")
-async def get_models_info():
+@app.get("/get_models_info", response_model=List[ModelInfo], responses={404: {"model": ErrorResponse}})
+async def get_models_info() -> List[ModelInfo]:
     logger.info("Call to /get_models_info")
     if not models:
         raise HTTPException(status_code=404, detail="No models found")
@@ -225,8 +285,8 @@ async def get_models_info():
     return result
 
 
-@app.get("/get_learning_curves/{model_id}")
-async def get_learning_curves(model_id: str):
+@app.get("/get_learning_curves/{model_id}", response_model=LearningCurves, responses={404: {"model": ErrorResponse}})
+async def get_learning_curves(model_id: Annotated[str, Any]) -> LearningCurves:
     logger.info("Call to /get_learning_curves")
     if model_id not in models:
         raise HTTPException(status_code=404, detail=f"Model with id {model_id} not found")
@@ -236,8 +296,8 @@ async def get_learning_curves(model_id: str):
     return {"learning_curves": model_info["learning_curves"]}
 
 
-@app.delete("/models/{model_id}")
-async def delete_model(model_id: str):
+@app.delete("/models/{model_id}", response_model=DeleteModelResponse, responses={404: {"model": ErrorResponse}})
+async def delete_model(model_id: Annotated[str, Any]) -> DeleteModelResponse:
     logger.info(f"Deleting model {model_id}")
     global models
     if model_id in models:
@@ -247,16 +307,20 @@ async def delete_model(model_id: str):
         raise HTTPException(status_code=404, detail=f"Model with ID '{model_id}' not found.")
 
 
-@app.delete("/models")
-async def delete_all_models():
+@app.delete("/models", response_model=DeleteModelResponse)
+async def delete_all_models() -> DeleteModelResponse:
     logger.info("Deleting all models")
     global models
     models.clear()
     return {"message": "All models have been deleted."}
 
 
-@app.post("/predict/{model_id}")
-async def predict(model_id: str, request: Request):
+@app.post(
+    "/predict/{model_id}",
+    response_model=PredictionResponse,
+    responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
+)
+async def predict(model_id: Annotated[str, Any], request: Annotated[Request, Any]) -> PredictionResponse:
     logger.info("Model inference")
     if model_id not in models:
         raise HTTPException(status_code=404, detail=f"Model with ID '{model_id}' not found.")
@@ -278,8 +342,12 @@ async def predict(model_id: str, request: Request):
         )
 
 
-@app.post("/compare_learning_curves/")
-async def compare_learning_curves(request: Request):
+@app.post(
+    "/compare_learning_curves/",
+    response_model=LearningCurvesComparisonResponse,
+    responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}, 500: {"model": ErrorResponse}},
+)
+async def compare_learning_curves(request: Annotated[Request, Any]) -> LearningCurvesComparisonResponse:
     logger.info("Comparing learning curves for multiple experiments")
     try:
         request_data = await request.json()
