@@ -2,7 +2,7 @@ import json
 import logging
 import requests
 import streamlit as st
-from pages.Dataset import FASTAPI_HOST
+from utils import FASTAPI_HOST
 
 logger = logging.getLogger(__name__)
 

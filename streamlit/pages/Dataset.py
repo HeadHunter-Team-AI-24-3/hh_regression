@@ -3,14 +3,9 @@ import os
 
 import pandas as pd
 import streamlit as st
-from utils import get_dataFrame, send_csv_to_backend, set_logo_md
+from utils import get_dataFrame, send_csv_to_backend, set_logo_md, FASTAPI_HOST, headers
 
 logger = logging.getLogger(__name__)
-
-# Если запускаете через Docker то раскоментируйте нижню строку и закоментируйте строк №10
-# FASTAPI_HOST = "http://fastapi:8000/"
-FASTAPI_HOST = "http://127.0.0.1:8000/"
-headers = {"Content-Type": "application/octet-stream", "User-Agent": "*"}
 
 st.set_page_config(page_title="Датасет", page_icon="", layout="wide")  # Название в меню  # Иконка в меню
 
