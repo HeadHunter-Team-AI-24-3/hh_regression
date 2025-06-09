@@ -6,7 +6,7 @@ from json import JSONDecodeError
 from typing import Annotated, Any, Dict, List
 
 import pandas as pd
-from catboost import CatBoostRegressor
+from sklearn.ensemble import RandomForestRegressor
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from preprocess import preprocess_data, preprocess_data_for_model
@@ -87,13 +87,13 @@ async def lifespan(app: FastAPI):
     try:
         logging.info("Upload model...")
 
-        model = CatBoostRegressor()
-        model.load_model("pretrained_model.cbm")
+        model = RandomForestRegressor()
+        model.load_model("pretrained_model.pkl")
 
-        hyperparameters = {"iterations": 100, "learning_rate": 0.1, "depth": 6}
+        hyperparameters = {'n_estimators': 100, 'random_state': 123}
 
-        rmse = 72576.98492
-        r2 = 0.4749209
+        rmse = 44484.30448
+        r2 = 0.62176
 
         learning_curves = {
             "iterations": [],

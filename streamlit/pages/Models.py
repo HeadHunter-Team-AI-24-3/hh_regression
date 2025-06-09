@@ -83,7 +83,7 @@ with tab1:
     model_id = container.text_input("ID модели", key=1)
     model_name = container.text_input("Название модели", key=2)
     hyperparameters = container.text_area(
-        "Гиперпараметры", value='{"iterations": 100, "learning_rate": 0.1, "depth": 6}'
+        "Гиперпараметры", value='{"n_estimators": 100, "random_state": 123}'
     )
     if container.button("Обучить"):
         train_model(model_id, model_name, json.loads(hyperparameters))
